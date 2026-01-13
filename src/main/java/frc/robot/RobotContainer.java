@@ -43,7 +43,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    m_driverController.b().whileTrue(new Spin(m_ShooterSubsystem, 67));
+    m_driverController.b().whileTrue(new Spin(m_ShooterSubsystem,100));
   }
 
   /**

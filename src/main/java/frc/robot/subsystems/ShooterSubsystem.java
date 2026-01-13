@@ -4,30 +4,46 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.MotorConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
   
-  private final TalonFX m_shooterMotor = new TalonFX(MotorConstants.IDs.kFeederMotor);
-
-  private final TalonFX m_feederMotor = new TalonFX(MotorConstants.IDs.kFeederMotor);
-
-  final MotionMagicVelocityVoltage m_request = new MotionMagicVelocityVoltage(0);
-
-  public ShooterSubsystem() {
-    m_shooterMotor.getConfigurator().apply(MotorConstants.Configs.talonFXConfigs);
-  }
+  private final TalonFX m_shooterMotor = new TalonFX(MotorConstants.Shooter.kMotorID);
+  private final TalonFX m_shooterMotorSlave = new TalonFX(MotorConstants.Shooter.kSlaveID);
 
   
-  public void setVelocity(double speed){
-    m_shooterMotor.setControl(m_request.withVelocity(speed));
+  private final TalonFX m_feederMotor = new TalonFX(MotorConstants.Feeder.kMotorID);
+  private final TalonFX m_hoodMotor = new TalonFX(MotorConstants.Hood.kMotorID);
+  
+  final MotionMagicVelocityVoltage m_shooterRequest = new MotionMagicVelocityVoltage(0);
+  final MotionMagicVelocityVoltage m_feederRequest = new MotionMagicVelocityVoltage(0);
+  final MotionMagicVoltage m_hoodRequest = new MotionMagicVoltage(0);
+  
+  public ShooterSubsystem() {
+    m_shooterMotor.getConfigurator().apply(MotorConstants.Shooter.config);
+    m_feederMotor.getConfigurator().apply(MotorConstants.Feeder.config);
+    m_hoodMotor.getConfigurator().apply(MotorConstants.Feeder.config);
+    m_shooterMotorSlave.setControl(new Follower(MotorConstants.Shooter.kMotorID, MotorAlignmentValue.Opposed));
+  }
+  
+  
+  public void setShooterVelocity(double speed){
+    m_shooterMotor.setControl(m_shooterRequest.withVelocity(speed));
+  }
+  
+  public void setFeederVelocity(double speed){
+    m_feederMotor.setControl(m_feederRequest.withVelocity(speed));
+  }
+
+  public void setHoodPosition (double pos){
+    m_hoodMotor.setControl(m_hoodRequest.withPosition(pos));
   }
 
 
