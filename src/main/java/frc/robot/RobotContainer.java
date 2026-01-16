@@ -4,13 +4,13 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Spin;
-import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.Shooter.Spin;
+import frc.robot.subsystems.ShooterSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -21,14 +21,18 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
-  ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem(); 
+  ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(); 
+
+  //IntakeSubsystem m_leftIntakeSubsystem = new IntakeSubsystem(MotorConstants.Intake.kLeftMotorID, MotorConstants.IntakeActuator.kLeftMotorID, 'L');
+  //IntakeSubsystem m_rightIntakeSubsystem = new IntakeSubsystem(MotorConstants.Intake.kRightMotorID, MotorConstants.IntakeActuator.kRightMotorID, 'R');
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    m_ShooterSubsystem.setDefaultCommand(new Spin(m_ShooterSubsystem, 0));
+    //m_shooterSubsystem.setDefaultCommand(new ShooterDefault(m_shooterSubsystem));
+    //m_leftIntakeSubsystem.setDefaultCommand(new IntakeDefault(m_leftIntakeSubsystem));
+    //m_rightIntakeSubsystem.setDefaultCommand(new IntakeDefault(m_rightIntakeSubsystem));
     // Configure the trigger bindings
     configureBindings();
   }
@@ -43,7 +47,10 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    m_driverController.b().whileTrue(new Spin(m_ShooterSubsystem,100));
+    //m_driverController.povLeft().onTrue(new SwitchToLeft(m_leftIntakeSubsystem, m_rightIntakeSubsystem));
+    //m_driverController.povRight().onTrue(new SwitchToRight(m_leftIntakeSubsystem, m_rightIntakeSubsystem));
+
+    m_driverController.b().whileTrue(new Spin(m_shooterSubsystem, 100));
   }
 
   /**

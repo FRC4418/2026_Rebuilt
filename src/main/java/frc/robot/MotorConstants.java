@@ -5,8 +5,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 public class MotorConstants {
 
     public static class Shooter {
-        public static final int kMotorID = 111;
-        public static final int kSlaveID = 112;
+        public static final int kMotorID = 0;
+        public static final int kSlaveID = 3;
 
         public static final TalonFXConfiguration config = new TalonFXConfiguration();
 
@@ -20,8 +20,8 @@ public class MotorConstants {
                 .withKD(0);
 
             config.MotionMagic
-                .withMotionMagicAcceleration(467)
-                .withMotionMagicJerk(6767);
+                .withMotionMagicAcceleration(600)
+                .withMotionMagicJerk(2000);
         }
     }
 
@@ -35,7 +35,7 @@ public class MotorConstants {
                 .withKS(0)
                 .withKV(0)
                 .withKA(0)
-                .withKP(0)
+                .withKP(0.1)
                 .withKI(0)
                 .withKD(0);
 
@@ -55,7 +55,7 @@ public class MotorConstants {
                 .withKS(0)
                 .withKV(0)
                 .withKA(0)
-                .withKP(0)
+                .withKP(0.1)
                 .withKI(0)
                 .withKD(0);
 
@@ -77,7 +77,7 @@ public class MotorConstants {
                 .withKS(0.67)
                 .withKV(0)
                 .withKA(0)
-                .withKP(0)
+                .withKP(0.1)
                 .withKI(0)
                 .withKD(0);
 
@@ -98,7 +98,28 @@ public class MotorConstants {
                 .withKS(0.67)
                 .withKV(0)
                 .withKA(0)
-                .withKP(0)
+                .withKP(0.1)
+                .withKI(0)
+                .withKD(0);
+
+            config.MotionMagic
+                .withMotionMagicCruiseVelocity(76)
+                .withMotionMagicAcceleration(67)
+                .withMotionMagicJerk(670);
+            }
+    }
+
+    public static class Climber {
+        public static final int kMotorID = 78;
+
+        public static final TalonFXConfiguration config = new TalonFXConfiguration();
+
+        static {
+            config.Slot0
+                .withKS(0.67)
+                .withKV(0)
+                .withKA(0)
+                .withKP(0.1)
                 .withKI(0)
                 .withKD(0);
 
