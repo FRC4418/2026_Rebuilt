@@ -5,7 +5,7 @@
 package frc.robot.commands.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.ManipulatorConstants;
+import frc.robot.Constants.ManipulatorConstants;
 import frc.robot.subsystems.ShooterSubsystem;
 
 

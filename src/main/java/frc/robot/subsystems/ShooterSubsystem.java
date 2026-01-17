@@ -11,7 +11,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.MotorConstants;
+import frc.robot.Constants.MotorConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
   
@@ -30,7 +30,7 @@ public class ShooterSubsystem extends SubsystemBase {
     m_shooterMotor.getConfigurator().apply(MotorConstants.Shooter.config);
     m_feederMotor.getConfigurator().apply(MotorConstants.Feeder.config);
     m_hoodMotor.getConfigurator().apply(MotorConstants.Feeder.config);
-    m_shooterMotorSlave.setControl(new Follower(MotorConstants.Shooter.kMotorID, MotorAlignmentValue.Opposed));
+    m_shooterMotorSlave.setControl(new Follower(MotorConstants.Shooter.kMotorID, MotorAlignmentValue.Aligned));
   }
   
   

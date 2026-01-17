@@ -1,12 +1,12 @@
-package frc.robot;
+package frc.robot.Constants;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 public class MotorConstants {
 
     public static class Shooter {
-        public static final int kMotorID = 0;
-        public static final int kSlaveID = 3;
+        public static final int kMotorID = 3;
+        public static final int kSlaveID = 4;
 
         public static final TalonFXConfiguration config = new TalonFXConfiguration();
 

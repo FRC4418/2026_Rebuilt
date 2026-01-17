@@ -35,6 +35,7 @@ public class RobotContainer {
     //m_rightIntakeSubsystem.setDefaultCommand(new IntakeDefault(m_rightIntakeSubsystem));
     // Configure the trigger bindings
     configureBindings();
+    m_shooterSubsystem.setDefaultCommand(new Spin(m_shooterSubsystem, 0));
   }
 
   /**
@@ -50,7 +51,7 @@ public class RobotContainer {
     //m_driverController.povLeft().onTrue(new SwitchToLeft(m_leftIntakeSubsystem, m_rightIntakeSubsystem));
     //m_driverController.povRight().onTrue(new SwitchToRight(m_leftIntakeSubsystem, m_rightIntakeSubsystem));
 
-    m_driverController.b().whileTrue(new Spin(m_shooterSubsystem, 100));
+    m_driverController.b().whileTrue(new Spin(m_shooterSubsystem, 67));
   }
 
   /**
