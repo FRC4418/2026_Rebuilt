@@ -51,7 +51,7 @@ public class RobotContainer {
     //m_driverController.povLeft().onTrue(new SwitchToLeft(m_leftIntakeSubsystem, m_rightIntakeSubsystem));
     //m_driverController.povRight().onTrue(new SwitchToRight(m_leftIntakeSubsystem, m_rightIntakeSubsystem));
 
-    m_driverController.b().whileTrue(new Spin(m_shooterSubsystem, 67));
+    m_driverController.b().whileTrue(new Spin(m_shooterSubsystem, -100));
   }
 
   /**

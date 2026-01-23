@@ -20,8 +20,8 @@ public class MotorConstants {
                 .withKD(0);
 
             config.MotionMagic
-                .withMotionMagicAcceleration(600)
-                .withMotionMagicJerk(2000);
+                .withMotionMagicAcceleration(400)
+                .withMotionMagicJerk(7000);
         }
     }
 
