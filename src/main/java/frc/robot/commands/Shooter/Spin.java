@@ -4,6 +4,8 @@
 
 package frc.robot.commands.Shooter;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShooterSubsystem;
 
@@ -11,9 +13,9 @@ import frc.robot.subsystems.ShooterSubsystem;
 public class Spin extends Command {
   /** Creates a new Spin. */
   ShooterSubsystem m_shooterSubsystem;
-  double speed;
+  DoubleSupplier speed;
 
-  public Spin(ShooterSubsystem m_shooterSubsystem, double speed) {
+  public Spin(ShooterSubsystem m_shooterSubsystem, DoubleSupplier speed) {
     this.m_shooterSubsystem = m_shooterSubsystem;
     this.speed = speed;
 
@@ -27,7 +29,7 @@ public class Spin extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_shooterSubsystem.setShooterVelocity(speed);
+    m_shooterSubsystem.setShooterVelocity(speed.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.

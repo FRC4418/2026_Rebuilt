@@ -11,6 +11,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ManipulatorConstants;
 import frc.robot.Constants.MotorConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -24,7 +25,7 @@ public class ShooterSubsystem extends SubsystemBase {
   
   final MotionMagicVelocityVoltage m_shooterRequest = new MotionMagicVelocityVoltage(0);
   final MotionMagicVelocityVoltage m_feederRequest = new MotionMagicVelocityVoltage(0);
-  final MotionMagicVoltage m_hoodRequest = new MotionMagicVoltage(0);
+  final MotionMagicVoltage m_hoodRequest = new MotionMagicVoltage(ManipulatorConstants.kHoodDefaultPos);
   
   public ShooterSubsystem() {
     m_shooterMotor.getConfigurator().apply(MotorConstants.Shooter.config);

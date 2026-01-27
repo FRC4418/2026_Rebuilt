@@ -20,4 +20,5 @@ public class ManipulatorConstants {
 
     // Climber
     public static final double kClimberUp = 67676767;
+    public static final double kClimberDown = 676676;
 }
