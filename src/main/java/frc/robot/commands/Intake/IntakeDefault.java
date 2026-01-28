@@ -10,7 +10,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class IntakeDefault extends Command {
   /** Creates a new IntakeDefault. */
-  IntakeSubsystem intakeSubsystem;
+  private IntakeSubsystem intakeSubsystem;
 
   public IntakeDefault(IntakeSubsystem intakeSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.

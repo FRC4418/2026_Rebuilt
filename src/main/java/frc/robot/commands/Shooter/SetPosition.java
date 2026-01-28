@@ -10,7 +10,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class SetPosition extends Command {
   /** Creates a new SetPosition. */
-  ShooterSubsystem shooterSubsystem;
+  private ShooterSubsystem shooterSubsystem;
   double position;
 
   public SetPosition(ShooterSubsystem shooterSubsystem, double position) {

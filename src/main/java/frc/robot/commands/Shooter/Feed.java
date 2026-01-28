@@ -14,7 +14,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class Feed extends Command {
   /** Creates a new Feed. */
-  ShooterSubsystem shooterSubsystem;
+  private ShooterSubsystem shooterSubsystem;
   public Feed(ShooterSubsystem shooterSubsystem) {
     this.shooterSubsystem = shooterSubsystem;
 

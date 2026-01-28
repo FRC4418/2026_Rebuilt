@@ -20,6 +20,8 @@ public class ShooterSubsystem extends SubsystemBase {
   private final TalonFX m_shooterMotorSlave = new TalonFX(MotorConstants.Shooter.kSlaveID);
 
   
+
+  
   private final TalonFX m_feederMotor = new TalonFX(MotorConstants.Feeder.kMotorID);
   private final TalonFX m_hoodMotor = new TalonFX(MotorConstants.Hood.kMotorID);
   
