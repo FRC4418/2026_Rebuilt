@@ -12,8 +12,8 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ManipulatorConstants;
-import frc.robot.Constants.MotorConstants;
+import frc.robot.constants.ManipulatorConstants;
+import frc.robot.constants.MotorConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
   
