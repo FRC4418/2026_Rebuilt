@@ -52,8 +52,9 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setTurretPos (Rotation2d pos){
-    m_turretMotor.setControl(m_turretRequest.withPosition(pos.getDegrees() * (ManipulatorConstants.turretRatio/360)));
+    m_turretMotor.setControl(m_turretRequest.withPosition(Math.min(Math.max(pos.getDegrees(),-120d),120d) * (ManipulatorConstants.turretRatio/360)));
   }
+
 
   @Override
   public void periodic() {
