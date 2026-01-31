@@ -12,13 +12,15 @@ public class ManipulatorConstants {
 
     public static final double kIntakeTolerance = 5;
 
-    public static final double kLeftIntakeUp = 40;
-    public static final double kLeftIntakeDown = 10;
-
-    public static final double kRightIntakeUp = 40;
-    public static final double kRightIntakeDown = 10;
+    public static final double kIntakeUpPos = 40;
+    public static final double kIntakeDownPos = 10;
 
     // Climber
-    public static final double kClimberUp = 67676767;
-    public static final double kClimberDown = 676676;
+    public static final double kClimberUpPos = 67676767;
+    public static final double kClimberDownPos = 676676;
+
+    // Turret
+    public static final double kTurretDefaultPos = 67676;
+
+    public static final double turretRatio = 13.4;
 }

@@ -48,13 +48,16 @@ public class IntakeSubsystem extends SubsystemBase {
     m_intakeMotor = new TalonFX(IntakeID);
     m_actuatorMotor = new TalonFX(ActuatorID); 
 
-    if (IntakeSide == 'L' || IntakeSide == 'l') {
-      downPos = ManipulatorConstants.kLeftIntakeDown;
-      upPos = ManipulatorConstants.kLeftIntakeUp;
-    } else if (IntakeSide == 'R' || IntakeSide == 'r'){
-      downPos = ManipulatorConstants.kRightIntakeDown;
-      upPos = ManipulatorConstants.kRightIntakeUp;
-    }
+    downPos = ManipulatorConstants.kIntakeDownPos;
+    upPos = ManipulatorConstants.kIntakeUpPos;
+
+    // if (IntakeSide == 'L' || IntakeSide == 'l') {
+    //   downPos = ManipulatorConstants.kLeftIntakeDownPos;
+    //   upPos = ManipulatorConstants.kLeftIntakeUpPos;
+    // } else if (IntakeSide == 'R' || IntakeSide == 'r'){
+    //   downPos = ManipulatorConstants.kRightIntakeDownPos;
+    //   upPos = ManipulatorConstants.kRightIntakeUpPos;
+    // }
 
     m_intakeMotor.getConfigurator().apply(MotorConstants.Intake.config);
     m_actuatorMotor.getConfigurator().apply(MotorConstants.IntakeActuator.config);

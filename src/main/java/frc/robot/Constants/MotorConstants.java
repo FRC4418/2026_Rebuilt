@@ -129,4 +129,25 @@ public class MotorConstants {
                 .withMotionMagicJerk(670);
             }
     }
+
+    public static class Turret {
+        public static final int kMotorID = 143;
+
+        public static final TalonFXConfiguration config = new TalonFXConfiguration();
+
+        static {
+            config.Slot0
+                .withKS(0)
+                .withKV(0)
+                .withKA(0)
+                .withKP(0.5)
+                .withKI(0)
+                .withKD(0);
+
+            config.MotionMagic
+                .withMotionMagicCruiseVelocity(86)
+                .withMotionMagicAcceleration(67)
+                .withMotionMagicJerk(2756);
+        }
+    }
 }
