@@ -4,15 +4,18 @@
 
 package frc.robot;
 
+import java.io.File;
+
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Shooter.Spin;
-import frc.robot.constants.OperatorConstants;
 import frc.robot.subsystems.ShooterSubsystem;
-
+import frc.robot.subsystems.SwerveSubsystem;
+import swervelib.SwerveInputStream;
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -21,21 +24,21 @@ import frc.robot.subsystems.ShooterSubsystem;
  */
 public class RobotContainer {
 
-  private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController m_driverController = new CommandXboxController(0);
 
-  ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(); 
+  // ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(); 
 
-  //SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),"swerve"));
+  SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),"swerve"));
 
-  //   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(),
-  //                                                               () -> m_driverController.getLeftY() * -1,
-  //                                                               () -> m_driverController.getLeftX() * -1)
-  //                                                           .withControllerRotationAxis(m_driverController::getRightX)
-  //                                                           .deadband(0.1)
-  //                                                           .scaleTranslation(0.8)
-  //                                                           .allianceRelativeControl(true);
+  SwerveInputStream driveAngularVelocity = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(),
+                                                                () -> m_driverController.getLeftY() * -1,
+                                                                () -> m_driverController.getLeftX() * -1)
+                                                            .withControllerRotationAxis(m_driverController::getRightX)
+                                                            .deadband(0.1)
+                                                            .scaleTranslation(0.8)
+                                                            .allianceRelativeControl(true);
 
-  // Command driveFieldOrientedAnglularVelocity = m_swerveSubsystem.driveFieldOriented(driveAngularVelocity);
+  Command driveFieldOrientedAnglularVelocity = m_swerveSubsystem.driveFieldOriented(driveAngularVelocity);
 
   //IntakeSubsystem m_leftIntakeSubsystem = new IntakeSubsystem(MotorConstants.Intake.kLeftMotorID, MotorConstants.IntakeActuator.kLeftMotorID, 'L');
   //IntakeSubsystem m_rightIntakeSubsystem = new IntakeSubsystem(MotorConstants.Intake.kRightMotorID, MotorConstants.IntakeActuator.kRightMotorID, 'R');
@@ -43,15 +46,15 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-    //m_swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    m_swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
  
     //m_shooterSubsystem.setDefaultCommand(new ShooterDefault(m_shooterSubsystem));
     //m_leftIntakeSubsystem.setDefaultCommand(new IntakeDefault(m_leftIntakeSubsystem));
     //m_rightIntakeSubsystem.setDefaultCommand(new IntakeDefault(m_rightIntakeSubsystem));
     // Configure the trigger bindings
-    SmartDashboard.putNumber("shooter speed", 0);
+    // SmartDashboard.putNumber("shooter speed", 0);
     configureBindings();
-    m_shooterSubsystem.setDefaultCommand(new Spin(m_shooterSubsystem, () -> 0));
+    // m_shooterSubsystem.setDefaultCommand(new Spin(m_shooterSubsystem, () -> 0));
   }
 
   /**
@@ -67,7 +70,7 @@ public class RobotContainer {
     //m_driverController.povLeft().onTrue(new SwitchToLeft(m_leftIntakeSubsystem, m_rightIntakeSubsystem));
     //m_driverController.povRight().onTrue(new SwitchToRight(m_leftIntakeSubsystem, m_rightIntakeSubsystem));
 
-    m_driverController.b().whileTrue(new Spin(m_shooterSubsystem, () -> SmartDashboard.getNumber("shooter speed", -60)));
+    // m_driverController.b().whileTrue(new Spin(m_shooterSubsystem, () -> SmartDashboard.getNumber("shooter speed", -60)));
   }
 
   /**
