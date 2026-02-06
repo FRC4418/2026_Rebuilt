@@ -71,6 +71,8 @@ public class RobotContainer {
     //m_driverController.povRight().onTrue(new SwitchToRight(m_leftIntakeSubsystem, m_rightIntakeSubsystem));
 
     // m_driverController.b().whileTrue(new Spin(m_shooterSubsystem, () -> SmartDashboard.getNumber("shooter speed", -60)));
+
+    m_driverController.a().onTrue(new InstantCommand(() -> m_swerveSubsystem.zeroGyro()));
   }
 
   /**
