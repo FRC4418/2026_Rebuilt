@@ -8,8 +8,8 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.ManipulatorConstants;
-import frc.robot.constants.MotorConstants;
+import frc.robot.Constants.ManipulatorConstants;
+import frc.robot.Constants.MotorConstants;
 
 public class ClimberSubsystem extends SubsystemBase {
   /** Creates a new ClimberSubsystem. */

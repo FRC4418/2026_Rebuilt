@@ -5,8 +5,16 @@
 package frc.robot;
 
 import java.io.File;
+import java.io.IOException;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.FileVersionException;
+import org.json.simple.parser.ParseException;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -23,6 +31,8 @@ import swervelib.SwerveInputStream;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+
+  private SendableChooser<Command> chooser = new SendableChooser<Command>();
 
   private final CommandXboxController m_driverController = new CommandXboxController(0);
 
@@ -55,6 +65,8 @@ public class RobotContainer {
     // SmartDashboard.putNumber("shooter speed", 0);
     configureBindings();
     // m_shooterSubsystem.setDefaultCommand(new Spin(m_shooterSubsystem, () -> 0));
+
+    addAutoOptions();
   }
 
   /**
@@ -75,6 +87,41 @@ public class RobotContainer {
     m_driverController.a().onTrue(new InstantCommand(() -> m_swerveSubsystem.zeroGyro()));
   }
 
+  public void addAutoOptions(){
+    chooser.setDefaultOption("test", getTestCommand());
+    chooser.addOption("test", getTestCommand());
+
+    SmartDashboard.putData("Auto Selector", chooser);
+  }
+
+  public PathPlannerPath getPath(String name){
+    try {
+      var path =  PathPlannerPath.fromPathFile(name);
+
+
+      var alliance = DriverStation.getAlliance();
+      if (alliance.isPresent()) {
+        if (alliance.get() == DriverStation.Alliance.Red) return path.flipPath();
+      }
+
+      return path;
+
+    } catch (FileVersionException | IOException | ParseException e) {
+      return null;
+    }
+  }
+
+  public Command getTestCommand(){
+
+    PathPlannerPath path = getPath("test");
+
+    Command drivePath = AutoBuilder.followPath(path);
+
+    Command resetPose = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(path.getStartingHolonomicPose().get()));
+
+    return resetPose.andThen(drivePath);
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -82,6 +129,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return new InstantCommand();
+    return chooser.getSelected();
   }
 }
