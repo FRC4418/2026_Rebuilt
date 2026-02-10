@@ -12,6 +12,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
 import org.json.simple.parser.ParseException;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -85,6 +86,7 @@ public class RobotContainer {
     // m_driverController.b().whileTrue(new Spin(m_shooterSubsystem, () -> SmartDashboard.getNumber("shooter speed", -60)));
 
     m_driverController.a().onTrue(new InstantCommand(() -> m_swerveSubsystem.zeroGyro()));
+    m_driverController.x().onTrue(new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d())));
   }
 
   public void addAutoOptions(){

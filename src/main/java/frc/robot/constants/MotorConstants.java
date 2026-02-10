@@ -1,6 +1,7 @@
 package frc.robot.Constants;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class MotorConstants {
 
@@ -48,22 +49,41 @@ public class MotorConstants {
     public static class Hood {
         public static final int kMotorID = 104;
 
-        public static final TalonFXConfiguration config = new TalonFXConfiguration();
+        public static final SparkMaxConfig config = new SparkMaxConfig();
 
         static {
-            config.Slot0
-                .withKS(0)
-                .withKV(0)
-                .withKA(0)
-                .withKP(0.1)
-                .withKI(0)
-                .withKD(0);
+            config.closedLoop.maxMotion
+                .cruiseVelocity(1)
+                .maxAcceleration(54);
 
-            config.MotionMagic
-                .withMotionMagicCruiseVelocity(100)
-                .withMotionMagicAcceleration(670)
-                .withMotionMagicJerk(1500);
+            config.closedLoop
+                // Set PID gains for position control in slot 0.
+                // We don't have to pass a slot number since the default is slot 0.
+                .p(0.5)
+                .i(0)
+                .d(0)
+                .outputRange(-1, 1);
         }
+
+
+        // public static final int kMotorID = 104;
+
+        // public static final TalonFXConfiguration config = new TalonFXConfiguration();
+
+        // static {
+        //     config.Slot0
+        //         .withKS(0)
+        //         .withKV(0)
+        //         .withKA(0)
+        //         .withKP(0.1)
+        //         .withKI(0)
+        //         .withKD(0);
+
+        //     config.MotionMagic
+        //         .withMotionMagicCruiseVelocity(100)
+        //         .withMotionMagicAcceleration(670)
+        //         .withMotionMagicJerk(1500);
+        // }
     }
 
     public static class Intake {
