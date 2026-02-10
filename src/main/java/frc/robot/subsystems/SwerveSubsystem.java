@@ -14,6 +14,8 @@ import java.io.IOException;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.Orchestra;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -36,7 +38,9 @@ import frc.robot.Constants.DriveConstants;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
+import swervelib.SwerveModule;
 import swervelib.math.SwerveMath;
+import swervelib.motors.TalonFXSwerve;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
@@ -76,6 +80,8 @@ public class SwerveSubsystem extends SubsystemBase
 
   private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
 
+  private final Orchestra m_orchestra = new Orchestra();
+
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
    *
@@ -109,6 +115,29 @@ public class SwerveSubsystem extends SubsystemBase
     swerveDrive.setModuleEncoderAutoSynchronize(false,
                                                 1); // Enable if you want to resynchronize your absolute encoders and motor encoders periodically when they are not moving.
     // swerveDrive.pushOffsetsToEncoders(); // Set the absolute encoder to be used over the internal encoder and push the offsets onto it. Throws warning if not possible
+
+
+    SwerveModule[] modules = swerveDrive.getModules();
+
+  
+    for (SwerveModule module : modules) {
+
+        if (module.getDriveMotor() instanceof TalonFXSwerve) {
+
+            TalonFXSwerve yagslTalonDrive = (TalonFXSwerve) module.getDriveMotor();
+            TalonFXSwerve yagslTalonAngle = (TalonFXSwerve) module.getAngleMotor();
+            
+            TalonFX rawTalon1 = (com.ctre.phoenix6.hardware.TalonFX) yagslTalonDrive.getMotor();
+            TalonFX rawTalon2 = (com.ctre.phoenix6.hardware.TalonFX) yagslTalonAngle.getMotor();
+            
+            m_orchestra.addInstrument(rawTalon1);
+            m_orchestra.addInstrument(rawTalon2);
+
+        }
+    }
+
+    m_orchestra.loadMusic("efn.chrp");
+    m_orchestra.play();
 
     setupPathPlanner();
   }
