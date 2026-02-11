@@ -120,24 +120,24 @@ public class SwerveSubsystem extends SubsystemBase
     SwerveModule[] modules = swerveDrive.getModules();
 
   
-    for (SwerveModule module : modules) {
+    // for (SwerveModule module : modules) {
 
-        if (module.getDriveMotor() instanceof TalonFXSwerve) {
+    //     if (module.getDriveMotor() instanceof TalonFXSwerve) {
 
-            TalonFXSwerve yagslTalonDrive = (TalonFXSwerve) module.getDriveMotor();
-            TalonFXSwerve yagslTalonAngle = (TalonFXSwerve) module.getAngleMotor();
+    //         TalonFXSwerve yagslTalonDrive = (TalonFXSwerve) module.getDriveMotor();
+    //         TalonFXSwerve yagslTalonAngle = (TalonFXSwerve) module.getAngleMotor();
             
-            TalonFX rawTalon1 = (com.ctre.phoenix6.hardware.TalonFX) yagslTalonDrive.getMotor();
-            TalonFX rawTalon2 = (com.ctre.phoenix6.hardware.TalonFX) yagslTalonAngle.getMotor();
+    //         TalonFX rawTalon1 = (com.ctre.phoenix6.hardware.TalonFX) yagslTalonDrive.getMotor();
+    //         TalonFX rawTalon2 = (com.ctre.phoenix6.hardware.TalonFX) yagslTalonAngle.getMotor();
             
-            m_orchestra.addInstrument(rawTalon1);
-            m_orchestra.addInstrument(rawTalon2);
+    //         m_orchestra.addInstrument(rawTalon1);
+    //         m_orchestra.addInstrument(rawTalon2);
 
-        }
-    }
+    //     }
+    // }
 
-    m_orchestra.loadMusic("efn.chrp");
-    m_orchestra.play();
+    // m_orchestra.loadMusic("efn.chrp");
+    // m_orchestra.play();
 
     setupPathPlanner();
   }
@@ -207,10 +207,8 @@ public class SwerveSubsystem extends SubsystemBase
           // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
           new PPHolonomicDriveController(
               // PPHolonomicController is the built in path following controller for holonomic drive trains
-              new PIDConstants(5.0, 0.0, 0.0),
-              // Translation PID constants
-              new PIDConstants(0.3, 0.0, 0.0)
-              // Rotation PID constants
+              new PIDConstants(5.0, 0.0, 0.0),  // Translation PID constants
+              new PIDConstants(1.0, 0.0, 0.0)  // Rotation PID constants
           ),
           config,
           // The robot configuration

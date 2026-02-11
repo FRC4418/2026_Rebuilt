@@ -90,8 +90,8 @@ public class RobotContainer {
   }
 
   public void addAutoOptions(){
-    chooser.setDefaultOption("test", getTestCommand());
-    chooser.addOption("test", getTestCommand());
+    chooser.setDefaultOption("New Path", getTestCommand());
+    chooser.addOption("New Path", getTestCommand());
 
     SmartDashboard.putData("Auto Selector", chooser);
   }
@@ -115,7 +115,7 @@ public class RobotContainer {
 
   public Command getTestCommand(){
 
-    PathPlannerPath path = getPath("test");
+    PathPlannerPath path = getPath("New Path");
 
     Command drivePath = AutoBuilder.followPath(path);
 
