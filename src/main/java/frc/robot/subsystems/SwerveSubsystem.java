@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -29,12 +30,17 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Meter;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
-import frc.robot.Constants.DriveConstants;
+import frc.robot.constants.DriveConstants;
+import limelight.Limelight;
+import limelight.networktables.AngularVelocity3d;
+import limelight.networktables.LimelightResults;
+import limelight.networktables.Orientation3d;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -53,6 +59,7 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.Timer;
 
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -82,6 +89,10 @@ public class SwerveSubsystem extends SubsystemBase
 
   private final Orchestra m_orchestra = new Orchestra();
 
+  private final Limelight m_leftCamera = new Limelight("left");
+  private final Limelight m_rightCamera = new Limelight("right");
+  private final Limelight m_turretCamera = new Limelight("turret");
+
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
    *
@@ -109,8 +120,8 @@ public class SwerveSubsystem extends SubsystemBase
     }
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
     swerveDrive.setCosineCompensator(false);//!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
-    swerveDrive.setAngularVelocityCompensation(true,
-                                               true,
+    swerveDrive.setAngularVelocityCompensation(false,
+                                               false,
                                                0.1); //Correct for skew that gets worse as angular velocity increases. Start with a coefficient of 0.1.
     swerveDrive.setModuleEncoderAutoSynchronize(false,
                                                 1); // Enable if you want to resynchronize your absolute encoders and motor encoders periodically when they are not moving.
@@ -120,24 +131,24 @@ public class SwerveSubsystem extends SubsystemBase
     SwerveModule[] modules = swerveDrive.getModules();
 
   
-    // for (SwerveModule module : modules) {
+    for (SwerveModule module : modules) {
 
-    //     if (module.getDriveMotor() instanceof TalonFXSwerve) {
+        if (module.getDriveMotor() instanceof TalonFXSwerve) {
 
-    //         TalonFXSwerve yagslTalonDrive = (TalonFXSwerve) module.getDriveMotor();
-    //         TalonFXSwerve yagslTalonAngle = (TalonFXSwerve) module.getAngleMotor();
+            TalonFXSwerve yagslTalonDrive = (TalonFXSwerve) module.getDriveMotor();
+            TalonFXSwerve yagslTalonAngle = (TalonFXSwerve) module.getAngleMotor();
             
-    //         TalonFX rawTalon1 = (com.ctre.phoenix6.hardware.TalonFX) yagslTalonDrive.getMotor();
-    //         TalonFX rawTalon2 = (com.ctre.phoenix6.hardware.TalonFX) yagslTalonAngle.getMotor();
+            TalonFX rawTalon1 = (com.ctre.phoenix6.hardware.TalonFX) yagslTalonDrive.getMotor();
+            TalonFX rawTalon2 = (com.ctre.phoenix6.hardware.TalonFX) yagslTalonAngle.getMotor();
             
-    //         m_orchestra.addInstrument(rawTalon1);
-    //         m_orchestra.addInstrument(rawTalon2);
+            // m_orchestra.addInstrument(rawTalon1);
+            // m_orchestra.addInstrument(rawTalon2);
 
-    //     }
-    // }
+        }
+    }
 
-    // m_orchestra.loadMusic("efn.chrp");
-    // m_orchestra.play();
+    m_orchestra.loadMusic("efn.chrp");
+    m_orchestra.play();
 
     setupPathPlanner();
   }
@@ -163,6 +174,7 @@ public class SwerveSubsystem extends SubsystemBase
     m_field.setRobotPose(getPose());
     SmartDashboard.putData("Field", m_field);
     SmartDashboard.putNumber("gryo", m_gyro.getYaw());
+    
   }
 
   @Override
@@ -207,8 +219,10 @@ public class SwerveSubsystem extends SubsystemBase
           // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
           new PPHolonomicDriveController(
               // PPHolonomicController is the built in path following controller for holonomic drive trains
-              new PIDConstants(5.0, 0.0, 0.0),  // Translation PID constants
-              new PIDConstants(1.0, 0.0, 0.0)  // Rotation PID constants
+              new PIDConstants(5.0, 0.0, 0.0),
+              // Translation PID constants
+              new PIDConstants(0.3, 0.0, 0.0)
+              // Rotation PID constants
           ),
           config,
           // The robot configuration

@@ -1,8 +1,11 @@
 package frc.robot.utils;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import limelight.Limelight;
 
 public class TrajectoryCalculator{
+    private static Limelight limelight = new Limelight("left");
+
     private static final double[][] optimalPoses = {
         // numbers from https://github.com/LukeG65536/TrajectoryCalculator in findline.py
         //dist(m),theta(rad),vel(m/x)
