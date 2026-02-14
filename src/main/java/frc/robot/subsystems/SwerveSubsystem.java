@@ -37,10 +37,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.constants.DriveConstants;
-import limelight.Limelight;
-import limelight.networktables.AngularVelocity3d;
-import limelight.networktables.LimelightResults;
-import limelight.networktables.Orientation3d;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -88,10 +84,6 @@ public class SwerveSubsystem extends SubsystemBase
   private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
 
   private final Orchestra m_orchestra = new Orchestra();
-
-  private final Limelight m_leftCamera = new Limelight("left");
-  private final Limelight m_rightCamera = new Limelight("right");
-  private final Limelight m_turretCamera = new Limelight("turret");
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
