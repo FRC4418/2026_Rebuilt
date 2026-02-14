@@ -4,15 +4,20 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+
 import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.util.Units;
 import limelight.Limelight;
 
 import limelight.networktables.AngularVelocity3d;
+import limelight.networktables.LimelightPoseEstimator.EstimationMode;
 import limelight.networktables.LimelightResults;
 import limelight.networktables.Orientation3d;
+import limelight.networktables.PoseEstimate;
 
 
 /** Add your docs here. */
@@ -32,16 +37,16 @@ public void updateRobotOrientation(Rotation3d rotation,
             new Orientation3d(
                 rotation,
                 new AngularVelocity3d(
-                    Units.DegreesPerSecond.of(pitchVel),
-                    Units.DegreesPerSecond.of(rollVel),
-                    Units.DegreesPerSecond.of(yawVel)
+                    DegreesPerSecond.of(pitchVel),
+                    DegreesPerSecond.of(rollVel),
+                    DegreesPerSecond.of(yawVel)
                 )
             )
         )
         .save();
 }
     
-    public Optional<Pose2d> getVisonPos() {
+    public Optional<PoseEstimate> getVisonPos() {
          // Get MegaTag2 pose
         Optional<PoseEstimate> visionEstimate = limelight.createPoseEstimator(EstimationMode.MEGATAG2).getPoseEstimate();
         // If the pose is present
@@ -49,11 +54,11 @@ public void updateRobotOrientation(Rotation3d rotation,
     }
 
     public int getNumTags() {
-        return limelight.getLatestResults().botpose_tagcount;
+        return (int) (limelight.getLatestResults().isEmpty() ? 0 : limelight.getLatestResults().get().botpose_tagcount);
     }
 
     public double getAvgArea() {
-        return limelight.getLatestResults().botpose_avgarea;
+        return (int) (limelight.getLatestResults().isEmpty() ? 0 : limelight.getLatestResults().get().botpose_avgarea);
     }
 
 
