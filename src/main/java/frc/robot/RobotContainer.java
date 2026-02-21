@@ -81,6 +81,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    DriverStation.silenceJoystickConnectionWarning(true);
     //m_driverController.povLeft().onTrue(new SwitchToLeft(m_leftIntakeSubsystem, m_rightIntakeSubsystem));
     //m_driverController.povRight().onTrue(new SwitchToRight(m_leftIntakeSubsystem, m_rightIntakeSubsystem));
 
@@ -88,6 +89,8 @@ public class RobotContainer {
 
     m_driverController.a().onTrue(new InstantCommand(() -> m_swerveSubsystem.zeroGyro()));
     m_driverController.x().onTrue(new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d())));
+
+    SmartDashboard.putData("Zero Gyro", new InstantCommand( () -> m_swerveSubsystem.zeroGyro() ));
   }
 
   public void addAutoOptions(){

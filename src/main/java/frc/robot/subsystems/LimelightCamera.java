@@ -9,64 +9,95 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.constants.DriveConstants;
+import frc.robot.utils.LimelightHelpers;
+import frc.robot.utils.LimelightHelpers.PoseEstimate;
 import limelight.Limelight;
 
-import limelight.networktables.AngularVelocity3d;
-import limelight.networktables.LimelightPoseEstimator.EstimationMode;
-import limelight.networktables.LimelightResults;
-import limelight.networktables.Orientation3d;
-import limelight.networktables.PoseEstimate;
 
 
 /** Add your docs here. */
 public class LimelightCamera {
-    Limelight limelight;
-    public LimelightCamera(String name) {
-        limelight = new Limelight(name);
-    }
-
-public void updateRobotOrientation(Rotation3d rotation, 
-                                   double pitchVel, 
-                                   double rollVel, 
-                                   double yawVel) {
-
-    limelight.getSettings()
-        .withRobotOrientation(
-            new Orientation3d(
-                rotation,
-                new AngularVelocity3d(
-                    DegreesPerSecond.of(pitchVel),
-                    DegreesPerSecond.of(rollVel),
-                    DegreesPerSecond.of(yawVel)
-                )
-            )
-        )
-        .save();
-}
+    // public Limelight limelight;
+    public String name;
     
-    public Optional<PoseEstimate> getVisonPos() {
-         // Get MegaTag2 pose
-        Optional<PoseEstimate> visionEstimate = limelight.createPoseEstimator(EstimationMode.MEGATAG2).getPoseEstimate();
-        // If the pose is present
-        return visionEstimate;
+    public LimelightCamera(String name) {
+        this.name = name;
+        // limelight = new Limelight(name);
+        // limelight.getSettings().withImuMode(ImuMode.ExternalImu).save();
+        // limelight.getSettings().
+        // estimator = limelight.createPoseEstimator(EstimationMode.MEGATAG1);
     }
 
-    public int getNumTags() {
-        return (int) (limelight.getLatestResults().isEmpty() ? 0 : limelight.getLatestResults().get().botpose_tagcount);
+    public PoseEstimate getLLHPose(double yaw, double yawRate){
+        LimelightHelpers.SetRobotOrientation(name, yaw, yawRate, 0, 0, 0, 0);
+
+        LimelightHelpers.PoseEstimate est = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
+        
+        return est;
     }
 
-    public double getAvgArea() {
-        return (int) (limelight.getLatestResults().isEmpty() ? 0 : limelight.getLatestResults().get().botpose_avgarea);
+    public void setIMUMode(int mode){
+        LimelightHelpers.SetIMUMode(name, mode);
+    }
+
+    public void setCameraPoseRobotSpace(Pose3d pos){
+        Rotation3d rot = pos.getRotation();
+        LimelightHelpers.setCameraPose_RobotSpace(name, pos.getX(), pos.getY(), pos.getZ(), rot.getX(), rot.getY(), rot.getZ());
     }
 
 
+    // public void updateRobotOrientation(Rotation3d rotation, double pitchVel, double rollVel, double yawVel) {
+    //     limelight.getSettings().withRobotOrientation(
+    //         new Orientation3d(
+    //             rotation,
+    //             new AngularVelocity3d(
+    //                 DegreesPerSecond.of(pitchVel),
+    //                 DegreesPerSecond.of(rollVel),
+    //                 DegreesPerSecond.of(yawVel)
+    //             )
+    //         )
+    //     )
+    //     .save();
+    // }
+    
+    // public Optional<PoseEstimate> getVisonPos() {
+    //      // Get MegaTag2 pose
+    //     // If the pose is present
+    //     // return estimator.getAlliancePoseEstimate();
+    //     // if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Blue)){
+    //     //     return BotPose.BLUE.get(limelight);
+    //     // }
 
+    //     return BotPose.BLUE_MEGATAG2.get(limelight);
+        
+    // }
 
-        // visionEstimate.ifPresent((PoseEstimate poseEstimate) -> {
-        // // Add it to the pose estimator.
-        //     poseEstimator.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds);
-        // });
+    // public void setIMUMode(ImuMode mode){
+    //     limelight.getSettings().withImuMode(mode).save();
+    // }
+
+    // public int getNumTags() {
+    //     // return (limelight.getLatestResults().isEmpty() ? 0 : limelight.getLatestResults().get().botpose_tagcount);
+    //     var curPos = this.getVisonPos();
+    //     if(curPos.isEmpty()) return 0;
+    //     return curPos.get().tagCount;
+    // }
+
+    // public double getAvgArea() {
+    //     // return (limelight.getLatestResults().isEmpty() ? 0 : limelight.getLatestResults().get().botpose_avgarea);
+    //     var curPos = this.getVisonPos();
+    //     if(curPos.isEmpty()) return 0;
+    //     return curPos.get().avgTagArea;
+    // }
+
+    // public double getTotalArea(){
+    //     return this.getAvgArea() * this.getNumTags();
+    // }
 
 }

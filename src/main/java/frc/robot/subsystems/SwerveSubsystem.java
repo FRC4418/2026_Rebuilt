@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
@@ -24,7 +25,9 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -71,6 +74,10 @@ import com.pathplanner.lib.util.DriveFeedforwards;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import frc.robot.subsystems.LimelightCamera;
+// import limelight.networktables.PoseEstimate;
+import frc.robot.utils.LimelightHelpers.PoseEstimate;
+
 
 public class SwerveSubsystem extends SubsystemBase
 {
@@ -84,6 +91,13 @@ public class SwerveSubsystem extends SubsystemBase
   private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
 
   private final Orchestra m_orchestra = new Orchestra();
+
+  private LimelightCamera three = new LimelightCamera("limelight-three");
+  
+  private LimelightCamera four = new LimelightCamera("limelight-four");
+
+  private ArrayList<LimelightCamera> cameras = new ArrayList<LimelightCamera>();
+  // private LimelightCamera[] cameras = new LimelightCamera[2];
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -143,6 +157,9 @@ public class SwerveSubsystem extends SubsystemBase
     m_orchestra.play();
 
     setupPathPlanner();
+
+    cameras.add(three);
+    cameras.add(four);
   }
 
   /**
@@ -163,10 +180,42 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void periodic()
   {
-    m_field.setRobotPose(getPose());
-    SmartDashboard.putData("Field", m_field);
-    SmartDashboard.putNumber("gryo", m_gyro.getYaw());
-    
+    updateVision();
+
+    Logger.recordOutput("gyro raw", m_gyro.getYaw());
+
+    Logger.recordOutput("Pose",swerveDrive.getPose());
+  }
+
+
+  public void updateVision()
+  {
+    double yaw = (double) m_gyro.getYaw();
+    double yawRate = m_gyro.getRate();
+
+    double bestTotalArea = 0;
+    PoseEstimate bestEst = null;
+
+    for (var camera : cameras){
+      PoseEstimate curEst = camera.getLLHPose(yaw, yawRate);
+
+      double area = curEst.avgTagArea * curEst.tagCount;
+
+      Logger.recordOutput("vision/"+camera.name+"-area", area);
+
+      if(area > bestTotalArea){
+        bestTotalArea = area;
+        bestEst = curEst;
+      }
+    }
+
+    // if(bestEst.isEmpty()) return;
+
+    // PoseEstimate est = bestEst.get();
+
+    if(bestEst == null) return;
+
+    swerveDrive.addVisionMeasurement(bestEst.pose, bestEst.timestampSeconds);
   }
 
   @Override
