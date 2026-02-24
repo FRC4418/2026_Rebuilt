@@ -17,6 +17,7 @@ import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ManipulatorConstants;
 import frc.robot.constants.MotorConstants;
@@ -28,7 +29,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final TalonFX m_turretMotor = new TalonFX(MotorConstants.Turret.kMotorID);
   
-  private final TalonFX m_feederMotor = new TalonFX(MotorConstants.Feeder.kMotorID);
+  private final TalonFX m_kickerMotor = new TalonFX(MotorConstants.Feeder.kMotorID);
   //private final TalonFX m_hoodMotor = new TalonFX(MotorConstants.Hood.kMotorID);
   private final SparkMax m_hoodMotor = new SparkMax(MotorConstants.Hood.kMotorID, SparkLowLevel.MotorType.kBrushless);
 
@@ -37,10 +38,12 @@ public class ShooterSubsystem extends SubsystemBase {
   //final MotionMagicVoltage m_hoodRequest = new MotionMagicVoltage(ManipulatorConstants.kHoodDefaultPos);
   final MotionMagicVoltage m_turretRequest = new MotionMagicVoltage(ManipulatorConstants.kTurretDefaultPos);
   final SparkClosedLoopController m_hoodController;
+
+  private final DigitalInput m_limitSwitch = new DigitalInput(3);
   
   public ShooterSubsystem() {
     m_shooterMotor.getConfigurator().apply(MotorConstants.Shooter.config);
-    m_feederMotor.getConfigurator().apply(MotorConstants.Feeder.config);
+    m_kickerMotor.getConfigurator().apply(MotorConstants.Feeder.config);
     //m_hoodMotor.getConfigurator()s.apply(MotorConstants.Feeder.config);
     m_shooterMotorSlave.setControl(new Follower(MotorConstants.Shooter.kMotorID, MotorAlignmentValue.Aligned));
     m_turretMotor.getConfigurator().apply(MotorConstants.Turret.config);
@@ -61,7 +64,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
   
   public void setFeederVelocity(double speed){
-    m_feederMotor.setControl(m_feederRequest.withVelocity(speed));
+    m_kickerMotor.setControl(m_feederRequest.withVelocity(speed));
   }
 
   public void setHoodPosition (double pos){
@@ -77,5 +80,8 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+      if(m_limitSwitch.get()){
+      m_hoodMotor.getEncoder().setPosition(0);
+    } 
   }
 }

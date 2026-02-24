@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ManipulatorConstants;
 import frc.robot.constants.MotorConstants;
@@ -22,6 +23,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public double downPos;
   public double upPos;
+
+  private final DigitalInput m_limitSwitch = new DigitalInput(0);
   /** Creates a new Intake. */
   // private final TalonFX m_leftIntakeMotor = new TalonFX(MotorConstants.Intake.kLeftMotorID);
   // private final TalonFX m_rightIntakeMotor = new TalonFX(MotorConstants.Intake.kRightMotorID);
@@ -152,5 +155,8 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if(m_limitSwitch.get()){
+      m_actuatorMotor.setPosition(0);
+    } 
   }
 }
