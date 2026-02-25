@@ -5,17 +5,19 @@
 package frc.robot.commands.Intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.Intake.IntakeState;
+import frc.robot.subsystems.Intake.IntakeSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class Extend extends Command {
-  private IntakeSubsystem intakeSubsystem;
-
-  public Extend(IntakeSubsystem intakeSubsystem) {
+public class SetIntakeState extends Command {
+  private IntakeState state;
+  private IntakeSubsystem m_intake;
+  /** Creates a new SetIntakeState. */
+  public SetIntakeState(IntakeSubsystem intake, IntakeState state) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.intakeSubsystem = intakeSubsystem;
-
-    addRequirements(intakeSubsystem);
+    this.m_intake = intake;
+    this.state = state;
+    addRequirements(m_intake);
   }
 
   // Called when the command is initially scheduled.
@@ -25,7 +27,8 @@ public class Extend extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intakeSubsystem.setActuator(intakeSubsystem.downPos);
+    m_intake.setActuatorPos(state.getPos());
+    m_intake.setIntakeVel(state.getVel());
   }
 
   // Called once the command ends or is interrupted.
@@ -35,6 +38,6 @@ public class Extend extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return intakeSubsystem.checkActuator(intakeSubsystem.downPos);
+    return false;
   }
 }

@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.Intake;
 
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -20,8 +20,6 @@ public class IntakeSubsystem extends SubsystemBase {
   private final MotionMagicVelocityVoltage m_intakeRequest = new MotionMagicVelocityVoltage(0);
   private final MotionMagicVoltage m_actuatorRequest = new MotionMagicVoltage(0);
 
-  public double downPos;
-  public double upPos;
   /** Creates a new Intake. */
   // private final TalonFX m_leftIntakeMotor = new TalonFX(MotorConstants.Intake.kLeftMotorID);
   // private final TalonFX m_rightIntakeMotor = new TalonFX(MotorConstants.Intake.kRightMotorID);
@@ -34,22 +32,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
   // final MotionMagicVoltage m_leftActuatorRequest = new MotionMagicVoltage(0);
   // final MotionMagicVoltage m_rightActuatorRequest = new MotionMagicVoltage(0);
-  /**
-   * ---
-   * <p>
-   * ---
-   * <p>
-   * ---
-   *
-   * @param IntakeSide "L" = left or "R" = right
-   * @return StatusCode of the set command
-   */
-  public IntakeSubsystem(int IntakeID, int ActuatorID, char IntakeSide) {
+  
+  public IntakeSubsystem(int IntakeID, int ActuatorID) {
     m_intakeMotor = new TalonFX(IntakeID);
     m_actuatorMotor = new TalonFX(ActuatorID); 
 
-    downPos = ManipulatorConstants.kIntakeDownPos;
-    upPos = ManipulatorConstants.kIntakeUpPos;
 
     // if (IntakeSide == 'L' || IntakeSide == 'l') {
     //   downPos = ManipulatorConstants.kLeftIntakeDownPos;
@@ -69,18 +56,19 @@ public class IntakeSubsystem extends SubsystemBase {
     // m_rightActuator.getConfigurator().apply(MotorConstants.IntakeActuator.config);
   }
 
-  public void setIntakeVelocity(double speed){
+  public void setIntakeVel(double speed){
     m_intakeMotor.setControl(m_intakeRequest.withVelocity(speed));
   }
-
-  public void setActuator(double position) {
+  
+  public void setActuatorPos(double position) {
     m_actuatorMotor.setControl(m_actuatorRequest.withPosition(position));
   }
-
-  public boolean checkActuator(double target) {
-    return Math.abs(m_actuatorMotor.getRotorPosition().getValueAsDouble() - target) < ManipulatorConstants.kIntakeTolerance;
+  
+  
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
   }
-
   // public void setLeftVelocity(double speed){
   //   m_leftIntakeMotor.setControl(m_leftIntakeRequest.withVelocity(speed));
   // }
@@ -148,9 +136,4 @@ public class IntakeSubsystem extends SubsystemBase {
   //     return false;
   //   } 
   //}
-
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
 }

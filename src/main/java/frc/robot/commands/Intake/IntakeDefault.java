@@ -5,7 +5,7 @@
 package frc.robot.commands.Intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.Intake.IntakeSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class IntakeDefault extends Command {
@@ -26,8 +26,8 @@ public class IntakeDefault extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intakeSubsystem.setActuator(intakeSubsystem.upPos);
-    intakeSubsystem.setIntakeVelocity(0);
+    intakeSubsystem.setIntakeVel(0);
+    intakeSubsystem.setActuatorPos(0);
   }
 
   // Called once the command ends or is interrupted.

@@ -6,7 +6,7 @@ package frc.robot.commands.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ManipulatorConstants;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.Shooter.ShooterSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShooterDefault extends Command {
@@ -27,7 +27,7 @@ public class ShooterDefault extends Command {
   @Override
   public void execute() {
     shooterSubsystem.setShooterVelocity(ManipulatorConstants.kShooterSpeed);
-    shooterSubsystem.setFeederVelocity(0);
+    // shooterSubsystem.setFeederVelocity(0);
     shooterSubsystem.setHoodPosition(ManipulatorConstants.kHoodDefaultPos);
   }
 
