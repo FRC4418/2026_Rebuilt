@@ -12,22 +12,29 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.MotorConstants;
 
 public class IndexerSubsystem extends SubsystemBase {
-  private final TalonFX m_indexerMotor = new TalonFX(MotorConstants.Indexer.kMotorID);
+  private final TalonFX m_kickerMotor = new TalonFX(MotorConstants.Indexer.kKickerMotorID);
+  private final TalonFX m_spindexerMotor = new TalonFX(MotorConstants.Indexer.kSpindexerMotorID);
 
-  final MotionMagicVelocityVoltage m_indexerRequest = new MotionMagicVelocityVoltage(0);
+  final MotionMagicVelocityVoltage m_spindexerRequest = new MotionMagicVelocityVoltage(0);
+  final MotionMagicVelocityVoltage m_kickerRequest = new MotionMagicVelocityVoltage(0);
 
   public DigitalInput m_beamBreak = new DigitalInput(8);
   /** Creates a new IndexerSubsystem. */
   public IndexerSubsystem() {
-    m_indexerMotor.getConfigurator().apply(MotorConstants.Shooter.config);
+    m_kickerMotor.getConfigurator().apply(MotorConstants.Indexer.kickerConfig);
+    m_spindexerMotor.getConfigurator().apply(MotorConstants.Indexer.spindexerConfig);
   }
 
   public boolean getBeamBreak(){
     return m_beamBreak.get();
   }
 
-  public void setIndexerVelocity(double speed) {
-    m_indexerMotor.setControl(m_indexerRequest.withVelocity(speed));
+  public void setSpindexerVel(double vel) {
+    m_spindexerMotor.setControl(m_spindexerRequest.withVelocity(vel));
+  }
+
+  public void setKickerVel(double vel){
+    m_kickerMotor.setControl(m_kickerRequest.withVelocity(vel));
   }
 
   @Override

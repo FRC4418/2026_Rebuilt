@@ -4,17 +4,18 @@
 
 package frc.robot.commands.Shooter;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ManipulatorConstants;
 import frc.robot.subsystems.ShooterSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShooterDefault extends Command {
-  private ShooterSubsystem shooterSubsystem;
+  private ShooterSubsystem m_shooterSubsystem;
 
   /** Creates a new ShooterDefault. */
   public ShooterDefault(ShooterSubsystem shooterSubsystem) {
-    this.shooterSubsystem = shooterSubsystem;
+    this.m_shooterSubsystem = shooterSubsystem;
 
     addRequirements(shooterSubsystem);
   }
@@ -26,9 +27,9 @@ public class ShooterDefault extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooterSubsystem.setShooterVelocity(ManipulatorConstants.kShooterSpeed);
-    shooterSubsystem.setFeederVelocity(0);
-    shooterSubsystem.setHoodPosition(ManipulatorConstants.kHoodDefaultPos);
+    m_shooterSubsystem.setTurretPos(Rotation2d.kZero);
+    m_shooterSubsystem.setShooterVel(ManipulatorConstants.Shooter.kShooterIdleSpeed);
+    m_shooterSubsystem.setHoodPos(ManipulatorConstants.Shooter.kHoodDefaultPos);
   }
 
   // Called once the command ends or is interrupted.

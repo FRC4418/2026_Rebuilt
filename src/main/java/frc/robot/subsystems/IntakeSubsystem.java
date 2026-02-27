@@ -15,14 +15,12 @@ import frc.robot.constants.MotorConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-  private final TalonFX m_intakeMotor;
-  private final TalonFX m_actuatorMotor;
+  private final TalonFX m_intakeMotor = new TalonFX(MotorConstants.Intake.kSpinMotorID);
+  private final TalonFX m_actuatorMotor = new TalonFX(MotorConstants.Intake.kActuatorMotorID);
 
   private final MotionMagicVelocityVoltage m_intakeRequest = new MotionMagicVelocityVoltage(0);
   private final MotionMagicVoltage m_actuatorRequest = new MotionMagicVoltage(0);
 
-  public double downPos;
-  public double upPos;
 
   private final DigitalInput m_limitSwitch = new DigitalInput(0);
   /** Creates a new Intake. */
@@ -37,22 +35,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
   // final MotionMagicVoltage m_leftActuatorRequest = new MotionMagicVoltage(0);
   // final MotionMagicVoltage m_rightActuatorRequest = new MotionMagicVoltage(0);
-  /**
-   * ---
-   * <p>
-   * ---
-   * <p>
-   * ---
-   *
-   * @param IntakeSide "L" = left or "R" = right
-   * @return StatusCode of the set command
-   */
-  public IntakeSubsystem(int IntakeID, int ActuatorID, char IntakeSide) {
-    m_intakeMotor = new TalonFX(IntakeID);
-    m_actuatorMotor = new TalonFX(ActuatorID); 
+  
+  public IntakeSubsystem() {
 
-    downPos = ManipulatorConstants.kIntakeDownPos;
-    upPos = ManipulatorConstants.kIntakeUpPos;
 
     // if (IntakeSide == 'L' || IntakeSide == 'l') {
     //   downPos = ManipulatorConstants.kLeftIntakeDownPos;
@@ -62,8 +47,8 @@ public class IntakeSubsystem extends SubsystemBase {
     //   upPos = ManipulatorConstants.kRightIntakeUpPos;
     // }
 
-    m_intakeMotor.getConfigurator().apply(MotorConstants.Intake.config);
-    m_actuatorMotor.getConfigurator().apply(MotorConstants.IntakeActuator.config);
+    m_intakeMotor.getConfigurator().apply(MotorConstants.Intake.spinConfig);
+    m_actuatorMotor.getConfigurator().apply(MotorConstants.Intake.actuatorConfig);
 
     // m_leftIntakeMotor.getConfigurator().apply(MotorConstants.Intake.config);
     // m_rightIntakeMotor.getConfigurator().apply(MotorConstants.Intake.config);
@@ -72,17 +57,14 @@ public class IntakeSubsystem extends SubsystemBase {
     // m_rightActuator.getConfigurator().apply(MotorConstants.IntakeActuator.config);
   }
 
-  public void setIntakeVelocity(double speed){
-    m_intakeMotor.setControl(m_intakeRequest.withVelocity(speed));
+  public void setIntakeVel(double vel){
+    m_intakeMotor.setControl(m_intakeRequest.withVelocity(vel));
   }
 
-  public void setActuator(double position) {
+  public void setActuatorPos(double position) {
     m_actuatorMotor.setControl(m_actuatorRequest.withPosition(position));
   }
 
-  public boolean checkActuator(double target) {
-    return Math.abs(m_actuatorMotor.getRotorPosition().getValueAsDouble() - target) < ManipulatorConstants.kIntakeTolerance;
-  }
 
   // public void setLeftVelocity(double speed){
   //   m_leftIntakeMotor.setControl(m_leftIntakeRequest.withVelocity(speed));

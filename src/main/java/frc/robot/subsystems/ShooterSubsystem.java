@@ -24,32 +24,28 @@ import frc.robot.constants.MotorConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
   
-  private final TalonFX m_shooterMotor = new TalonFX(MotorConstants.Shooter.kMotorID);
-  private final TalonFX m_shooterMotorSlave = new TalonFX(MotorConstants.Shooter.kSlaveID);
+  private final TalonFX m_shooterMotor = new TalonFX(MotorConstants.Shooter.kShooterMotorID);
+  private final TalonFX m_shooterMotorSlave = new TalonFX(MotorConstants.Shooter.kShooterSlaveID);
+  private final TalonFX m_turretMotor = new TalonFX(MotorConstants.Shooter.kTurretMotorID);
 
-  private final TalonFX m_turretMotor = new TalonFX(MotorConstants.Turret.kMotorID);
-  
-  private final TalonFX m_kickerMotor = new TalonFX(MotorConstants.Feeder.kMotorID);
-  //private final TalonFX m_hoodMotor = new TalonFX(MotorConstants.Hood.kMotorID);
-  private final SparkMax m_hoodMotor = new SparkMax(MotorConstants.Hood.kMotorID, SparkLowLevel.MotorType.kBrushless);
+  private final SparkMax m_hoodMotor = new SparkMax(MotorConstants.Shooter.kHoodMotorID, SparkLowLevel.MotorType.kBrushless);
+
 
   final MotionMagicVelocityVoltage m_shooterRequest = new MotionMagicVelocityVoltage(0);
   final MotionMagicVelocityVoltage m_feederRequest = new MotionMagicVelocityVoltage(0);
-  //final MotionMagicVoltage m_hoodRequest = new MotionMagicVoltage(ManipulatorConstants.kHoodDefaultPos);
-  final MotionMagicVoltage m_turretRequest = new MotionMagicVoltage(ManipulatorConstants.kTurretDefaultPos);
+
+  final MotionMagicVoltage m_turretRequest = new MotionMagicVoltage(ManipulatorConstants.Shooter.kTurretDefaultPos);
   final SparkClosedLoopController m_hoodController;
 
   private final DigitalInput m_limitSwitch = new DigitalInput(3);
   
   public ShooterSubsystem() {
-    m_shooterMotor.getConfigurator().apply(MotorConstants.Shooter.config);
-    m_kickerMotor.getConfigurator().apply(MotorConstants.Feeder.config);
-    //m_hoodMotor.getConfigurator()s.apply(MotorConstants.Feeder.config);
-    m_shooterMotorSlave.setControl(new Follower(MotorConstants.Shooter.kMotorID, MotorAlignmentValue.Aligned));
-    m_turretMotor.getConfigurator().apply(MotorConstants.Turret.config);
+    m_shooterMotor.getConfigurator().apply(MotorConstants.Shooter.shooterConfig);
+    m_shooterMotorSlave.setControl(new Follower(MotorConstants.Shooter.kShooterMotorID, MotorAlignmentValue.Aligned));
+    m_turretMotor.getConfigurator().apply(MotorConstants.Shooter.turretConfig);
 
     m_hoodMotor.configure(
-      MotorConstants.Hood.config,
+      MotorConstants.Shooter.hoodConfig,
       ResetMode.kResetSafeParameters,
       PersistMode.kPersistParameters
     );
@@ -59,28 +55,33 @@ public class ShooterSubsystem extends SubsystemBase {
   }
   
   
-  public void setShooterVelocity(double speed){
-    m_shooterMotor.setControl(m_shooterRequest.withVelocity(speed));
-  }
-  
-  public void setFeederVelocity(double speed){
-    m_kickerMotor.setControl(m_feederRequest.withVelocity(speed));
+  public void setShooterVel(double vel){
+    m_shooterMotor.setControl(m_shooterRequest.withVelocity(vel));
   }
 
-  public void setHoodPosition (double pos){
-    // m_hoodMotor.setControl(m_hoodRequest.withPosition(pos));
-    m_hoodController.setSetpoint(pos, SparkBase.ControlType.kMAXMotionPositionControl);
+  public void setHoodPos(double numRotations){
+    m_hoodController.setSetpoint(numRotations, SparkBase.ControlType.kMAXMotionPositionControl);
   }
 
-  public void setTurretPos (Rotation2d pos){
-    m_turretMotor.setControl(m_turretRequest.withPosition(Math.min(Math.max(pos.getDegrees(),-120d),120d) * (ManipulatorConstants.turretRatio/360)));
+  public void setHoodPos(Rotation2d pos){
+    
+    Rotation2d clamped = Rotation2d.fromDegrees(Math.min(ManipulatorConstants.Shooter.minHoodDegrees, Math.min(ManipulatorConstants.Shooter.maxHoodDegrees, pos.getDegrees())));
+    
+    double rotations = clamped.getRotations();
+
+    setHoodPos(rotations*ManipulatorConstants.Shooter.hoodRatio);
+  }
+
+  public void setTurretPos(Rotation2d pos){
+    double clamped = Math.min(Math.max(pos.getDegrees(), ManipulatorConstants.Shooter.minTurretDegrees), ManipulatorConstants.Shooter.maxTurretDegrees);
+    m_turretMotor.setControl(m_turretRequest.withPosition(clamped * (ManipulatorConstants.Shooter.turretRatio/360)));
   }
 
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-      if(m_limitSwitch.get()){
+    if(m_limitSwitch.get()){
       m_hoodMotor.getEncoder().setPosition(0);
     } 
   }

@@ -10,11 +10,13 @@ import frc.robot.subsystems.IndexerSubsystem;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class SetIndexer extends Command {
   private IndexerSubsystem m_indexerSubsystem;
-  private double speed;
+  private double kickerVel;
+  private double spindexerVel;
   /** Creates a new SetIndexer. */
-  public SetIndexer(IndexerSubsystem indexerSubsystem, double speed) {
+  public SetIndexer(IndexerSubsystem indexerSubsystem, double kickerVel, double spindexerVel) {
     m_indexerSubsystem = indexerSubsystem;
-    this.speed = speed;
+    this.kickerVel = kickerVel;
+    this.spindexerVel = spindexerVel;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(indexerSubsystem);
   }
@@ -22,12 +24,14 @@ public class SetIndexer extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_indexerSubsystem.setIndexerVelocity(speed);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    m_indexerSubsystem.setKickerVel(kickerVel);
+    m_indexerSubsystem.setSpindexerVel(spindexerVel);
+  }
 
   // Called once the command ends or is interrupted.
   @Override

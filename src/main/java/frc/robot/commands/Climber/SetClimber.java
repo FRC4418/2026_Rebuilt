@@ -9,19 +9,19 @@ import frc.robot.constants.ManipulatorConstants;
 import frc.robot.subsystems.ClimberSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class MoveClimber extends Command {
+public class SetClimber extends Command {
   /** Creates a new MoveClimber. */
   private ClimberSubsystem climberSubsystem;
   private boolean up = false;
 
-  public MoveClimber(ClimberSubsystem climberSubsystem) {
+  public SetClimber(ClimberSubsystem climberSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.climberSubsystem = climberSubsystem;
 
     addRequirements(climberSubsystem);
   }
 
-  public MoveClimber(ClimberSubsystem climberSubsystem, boolean up) {
+  public SetClimber(ClimberSubsystem climberSubsystem, boolean up) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.climberSubsystem = climberSubsystem;
 
@@ -38,7 +38,7 @@ public class MoveClimber extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climberSubsystem.setClimber(up ? ManipulatorConstants.kClimberUpPos : ManipulatorConstants.kClimberDownPos);
+    climberSubsystem.setClimberPos(up ? ManipulatorConstants.Climber.kClimberUpPos : ManipulatorConstants.Climber.kClimberDownPos);
   }
 
   // Called once the command ends or is interrupted.

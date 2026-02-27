@@ -15,13 +15,13 @@ public class ClimberSubsystem extends SubsystemBase {
   /** Creates a new ClimberSubsystem. */
   private final TalonFX m_climbMotor = new TalonFX(MotorConstants.Climber.kMotorID);
 
-  final MotionMagicVoltage m_climbRequest = new MotionMagicVoltage(ManipulatorConstants.kClimberDownPos);
+  final MotionMagicVoltage m_climbRequest = new MotionMagicVoltage(ManipulatorConstants.Climber.kClimberDownPos);
 
   public ClimberSubsystem() {
     m_climbMotor.getConfigurator().apply(MotorConstants.Climber.config);
   }
 
-  public void setClimber (double pos){
+  public void setClimberPos (double pos){
     m_climbMotor.setControl(m_climbRequest.withPosition(pos));
   }
 

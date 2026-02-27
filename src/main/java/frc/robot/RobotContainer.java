@@ -21,10 +21,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.Shooter.Spin;
+import frc.robot.commands.Climber.SetClimber;
+import frc.robot.commands.Indexer.IndexerDefault;
+import frc.robot.commands.Indexer.SetIndexer;
+import frc.robot.commands.Intake.IntakeDefault;
+import frc.robot.commands.Intake.SetIntake;
+import frc.robot.commands.Shooter.SetShooter;
+import frc.robot.commands.Shooter.ShooterDefault;
+import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.utils.TrajectoryCalculator;
 import swervelib.SwerveInputStream;
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -33,6 +41,10 @@ import swervelib.SwerveInputStream;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  private IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+  private IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
+  private ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
+  private ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
 
   private SendableChooser<Command> chooser = new SendableChooser<Command>();
 
@@ -52,22 +64,11 @@ public class RobotContainer {
 
   Command driveFieldOrientedAnglularVelocity = m_swerveSubsystem.driveFieldOriented(driveAngularVelocity);
 
-  //IntakeSubsystem m_leftIntakeSubsystem = new IntakeSubsystem(MotorConstants.Intake.kLeftMotorID, MotorConstants.IntakeActuator.kLeftMotorID, 'L');
-  //IntakeSubsystem m_rightIntakeSubsystem = new IntakeSubsystem(MotorConstants.Intake.kRightMotorID, MotorConstants.IntakeActuator.kRightMotorID, 'R');
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-
-    m_swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
- 
-    //m_shooterSubsystem.setDefaultCommand(new ShooterDefault(m_shooterSubsystem));
-    //m_leftIntakeSubsystem.setDefaultCommand(new IntakeDefault(m_leftIntakeSubsystem));
-    //m_rightIntakeSubsystem.setDefaultCommand(new IntakeDefault(m_rightIntakeSubsystem));
-    // Configure the trigger bindings
-    // SmartDashboard.putNumber("shooter speed", 0);
+    setDefaultCommands(); 
     configureBindings();
-    // m_shooterSubsystem.setDefaultCommand(new Spin(m_shooterSubsystem, () -> 0));
-
     addAutoOptions();
   }
 
@@ -80,15 +81,22 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
+
+  private void setDefaultCommands(){
+    m_swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    m_intakeSubsystem.setDefaultCommand(new IntakeDefault(m_intakeSubsystem));
+    m_indexerSubsystem.setDefaultCommand(new IndexerDefault(m_indexerSubsystem));
+    m_shooterSubsystem.setDefaultCommand(new ShooterDefault(m_shooterSubsystem));
+    m_climberSubsystem.setDefaultCommand(new SetClimber(m_climberSubsystem, false));
+  }
+
   private void configureBindings() {
     DriverStation.silenceJoystickConnectionWarning(true);
-    //m_driverController.povLeft().onTrue(new SwitchToLeft(m_leftIntakeSubsystem, m_rightIntakeSubsystem));
-    //m_driverController.povRight().onTrue(new SwitchToRight(m_leftIntakeSubsystem, m_rightIntakeSubsystem));
 
-    // m_driverController.b().whileTrue(new Spin(m_shooterSubsystem, () -> SmartDashboard.getNumber("shooter speed", -60)));
+    m_driverController.a().toggleOnTrue(new SetIntake(m_intakeSubsystem, 80, 0));
+    m_driverController.x().whileTrue(new SetShooter(m_shooterSubsystem, 0, 100));
 
-    m_driverController.a().onTrue(new InstantCommand(() -> m_swerveSubsystem.zeroGyro()));
-    m_driverController.x().onTrue(new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d())));
+    m_driverController.y().onTrue(new InstantCommand(() -> m_swerveSubsystem.zeroGyro()));
 
     SmartDashboard.putData("Zero Gyro", new InstantCommand( () -> m_swerveSubsystem.zeroGyro() ));
   }

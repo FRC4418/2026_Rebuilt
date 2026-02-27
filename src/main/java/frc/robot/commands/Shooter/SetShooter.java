@@ -4,34 +4,39 @@
 
 package frc.robot.commands.Shooter;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShooterSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class SetShooterState extends Command {
+public class SetShooter extends Command {
   private ShooterSubsystem m_shooterSubsystem;
 
+  Rotation2d turretPos;
   double hoodPos;
-  double kickerSpeed;
   double shooterSpeed;
 
   /** Creates a new SetShooterState. */
-  public SetShooterState(ShooterSubsystem shooterSubsystem, double hoodPos, double kickerSpeed, double shooterSpeed) {
-    m_shooterSubsystem = shooterSubsystem;
+  public SetShooter(ShooterSubsystem shooterSubsystem, Rotation2d turretPos, double hoodPos, double shooterSpeed) {
+    this.m_shooterSubsystem = shooterSubsystem;
+    this.turretPos = turretPos;
     this.hoodPos = hoodPos;
-    this.kickerSpeed = kickerSpeed;
     this.shooterSpeed = shooterSpeed;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shooterSubsystem);
   }
 
+  public SetShooter(ShooterSubsystem shooterSubsystem, double hoodPos, double shooterSpeed){
+    this(shooterSubsystem, Rotation2d.kZero, hoodPos, shooterSpeed);
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_shooterSubsystem.setHoodPosition(hoodPos);
-    m_shooterSubsystem.setFeederVelocity(kickerSpeed);
-    m_shooterSubsystem.setShooterVelocity(shooterSpeed);
+    m_shooterSubsystem.setTurretPos(turretPos);
+    m_shooterSubsystem.setHoodPos(hoodPos);
+    m_shooterSubsystem.setShooterVel(shooterSpeed);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
