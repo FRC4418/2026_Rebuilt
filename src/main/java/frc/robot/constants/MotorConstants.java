@@ -36,7 +36,7 @@ public class MotorConstants {
                 .withKS(0)
                 .withKV(0)
                 .withKA(0)
-                .withKP(0.1)
+                .withKP(1)
                 .withKI(0)
                 .withKD(0);
 
@@ -167,6 +167,28 @@ public class MotorConstants {
             config.MotionMagic
                 .withMotionMagicCruiseVelocity(86)
                 .withMotionMagicAcceleration(67)
+                .withMotionMagicJerk(2756);
+        }
+    }
+
+    public static class Indexer {
+        public static final int kSpindexerMotorID = 109;
+        public static final int kKickerMotorID = 29;
+
+        public static final TalonFXConfiguration config = new TalonFXConfiguration();
+
+        static {
+            config.Slot0
+                .withKS(0)
+                .withKV(0)
+                .withKA(0)
+                .withKP(0.5)
+                .withKI(0)
+                .withKD(0);
+
+            config.MotionMagic
+                .withMotionMagicCruiseVelocity(86)
+                .withMotionMagicAcceleration(400)
                 .withMotionMagicJerk(2756);
         }
     }

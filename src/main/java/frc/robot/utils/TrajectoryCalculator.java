@@ -1,6 +1,7 @@
 package frc.robot.utils;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.constants.ManipulatorConstants;
 import limelight.Limelight;
 
 public class TrajectoryCalculator{
@@ -56,6 +57,22 @@ public class TrajectoryCalculator{
             if(optimalPoses[i][0] > dist) break;
         }
         return interpolate(dist, optimalPoses[i][0],optimalPoses[i+1][0],optimalPoses[i][2],optimalPoses[i+1][2]);
+    }
+
+    public static double getDist(Rotation2d angle, double vel){
+        double deltaH = 2 - ManipulatorConstants.kShooterHeight;
+
+        double a = (-9.8) / (2*angle.getCos()*vel);
+
+        double b = angle.getTan();
+
+        return (-b - Math.sqrt(Math.pow(b, 2) - 4*a*deltaH))/(2*a);
+    }
+
+    public static double getTime(Rotation2d angle, double vel){
+        double xVel = angle.getCos() * vel;
+        double xDist = getDist(angle, vel);
+        return xDist/xVel;
     }
 
 

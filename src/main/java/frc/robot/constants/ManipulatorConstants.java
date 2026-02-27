@@ -9,11 +9,17 @@ public class ManipulatorConstants {
 
     public static final double kHoodDefaultPos = 67;
 
+    public static final double kShooterHeight = .5;
+
     // Intake    
     public static final double kIntakeSpeed = 67;
 
     public static final double kIntakeUpPos = 40;
     public static final double kIntakeDownPos = 0;
+
+    //Indexer
+    public static final double kKickerSpeed = 80;
+    public static final double kSpindexerSpeed = 80;
 
     // Climber
     public static final double kClimberUpPos = 67676767;

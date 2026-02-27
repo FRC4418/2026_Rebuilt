@@ -1,0 +1,45 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.subsystems.Indexer;
+
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
+
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.ManipulatorConstants;
+import frc.robot.constants.MotorConstants;
+
+public class IndexerSubsystem extends SubsystemBase {
+
+  private final TalonFX m_kickerMotor = new TalonFX(MotorConstants.Indexer.kKickerMotorID);
+  private final TalonFX m_spindexerMotor =new TalonFX(MotorConstants.Indexer.kSpindexerMotorID);
+
+  private final MotionMagicVelocityVoltage m_kickerRequest = new MotionMagicVelocityVoltage(0);
+  private final MotionMagicVelocityVoltage m_spindexerRequest = new MotionMagicVelocityVoltage(0);
+
+  
+  public IndexerSubsystem() {
+
+
+    m_kickerMotor.getConfigurator().apply(MotorConstants.Indexer.config);
+    m_spindexerMotor.getConfigurator().apply(MotorConstants.Indexer.config);
+  
+  }
+
+  public void setSpindexerVel(double vel){
+    m_spindexerMotor.setControl(m_spindexerRequest.withVelocity(vel));
+  }
+  
+  public void setKickerVel(double vel) {
+    m_kickerMotor.setControl(m_kickerRequest.withVelocity(vel));
+  }
+  
+  
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+  }
+}

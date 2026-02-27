@@ -5,20 +5,24 @@
 package frc.robot.subsystems.Shooter;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.Vector;
 import frc.robot.constants.ManipulatorConstants;
+import frc.robot.utils.TrajectoryCalculator;
 
 /** Add your docs here. */
 public class ShooterState {
     private Rotation2d turretHeading;
     private Rotation2d hoodAngle;
+    private double shooterVel;
 
-    public ShooterState(Rotation2d turretHeading, Rotation2d hoodAngle){
+    public ShooterState(Rotation2d turretHeading, Rotation2d hoodAngle, double shooterVel){
         this.turretHeading = turretHeading;
         this.hoodAngle = hoodAngle;
-    }
-
-    public ShooterState(Rotation2d hoodAngle){
-        this(Rotation2d.kZero, hoodAngle);
+        this.shooterVel = shooterVel;
+        
     }
 
     public Rotation2d getTurretHeading(){
@@ -27,6 +31,14 @@ public class ShooterState {
 
     public Rotation2d getHoodAngle(){
         return hoodAngle;
+    }
+
+    public double getShooterVel(){
+        return shooterVel;
+    }
+
+    public void setShooterVel(double vel){
+        shooterVel = vel;
     }
 
     public void setTurretHeading(Rotation2d rot){
@@ -38,4 +50,15 @@ public class ShooterState {
     public void setHoodAngle(Rotation2d rot){
         hoodAngle = rot;
     }
+
+    public void setTarget(Transform2d globalRobotPos, Transform2d globalTargetPos, ChassisSpeeds robotRelativeSpeeds){
+        Transform2d localTargetPose = globalTargetPos.plus(globalTargetPos.inverse());
+
+        double dist = localTargetPose.getTranslation().getNorm();
+        Rotation2d angle = localTargetPose.getTranslation().getAngle();
+
+        double timeOfFlight = 0;
+        
+    }
+
 }
