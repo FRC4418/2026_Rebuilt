@@ -22,12 +22,18 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Climber.SetClimber;
+import frc.robot.commands.Climber.SetClimberPercent;
 import frc.robot.commands.Indexer.IndexerDefault;
 import frc.robot.commands.Indexer.SetIndexer;
 import frc.robot.commands.Intake.IntakeDefault;
 import frc.robot.commands.Intake.SetIntake;
 import frc.robot.commands.Shooter.SetShooter;
 import frc.robot.commands.Shooter.ShooterDefault;
+import frc.robot.constants.ManipulatorConstants;
+import frc.robot.constants.ManipulatorConstants.ClimberConstants;
+import frc.robot.constants.ManipulatorConstants.IndexerConstants;
+import frc.robot.constants.ManipulatorConstants.IntakeConstants;
+import frc.robot.commands.Shooter.AutoAim;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -93,10 +99,18 @@ public class RobotContainer {
   private void configureBindings() {
     DriverStation.silenceJoystickConnectionWarning(true);
 
-    m_driverController.a().toggleOnTrue(new SetIntake(m_intakeSubsystem, 80, 0));
-    m_driverController.x().whileTrue(new SetShooter(m_shooterSubsystem, 0, 100));
+    m_driverController.leftTrigger().whileTrue(new SetIntake(m_intakeSubsystem, IntakeConstants.kIntakeSpeed, IntakeConstants.kIntakeDownPos));
+    m_driverController.b().toggleOnTrue(new SetIntake(m_intakeSubsystem, 0, IntakeConstants.kIntakeUpPos));
 
-    m_driverController.y().onTrue(new InstantCommand(() -> m_swerveSubsystem.zeroGyro()));
+    m_driverController.y().whileTrue(new SetShooter(m_shooterSubsystem, 0, 100));
+    m_driverController.x().toggleOnTrue(new AutoAim(m_swerveSubsystem, m_shooterSubsystem, new Pose2d()));
+
+    m_driverController.rightTrigger().whileTrue(new SetIndexer(m_indexerSubsystem, IndexerConstants.kKickerSpeed, IndexerConstants.kSpindexerSpeed));
+
+    m_driverController.povUp().whileTrue(new SetClimberPercent(m_climberSubsystem, ClimberConstants.kClimberPercentSpeed));
+    m_driverController.povDown().whileTrue(new SetClimberPercent(m_climberSubsystem, -ClimberConstants.kClimberPercentSpeed));
+
+    m_driverController.a().onTrue(new InstantCommand(() -> m_swerveSubsystem.zeroGyro()));
 
     SmartDashboard.putData("Zero Gyro", new InstantCommand( () -> m_swerveSubsystem.zeroGyro() ));
   }

@@ -20,6 +20,7 @@ public class MotorConstants {
                 .withKD(0);
 
             actuatorConfig.MotionMagic
+                .withMotionMagicCruiseVelocity(80)
                 .withMotionMagicAcceleration(200)
                 .withMotionMagicJerk(1000);
             }
@@ -34,12 +35,11 @@ public class MotorConstants {
                 .withKS(0)
                 .withKV(0)
                 .withKA(0)
-                .withKP(0.1)
+                .withKP(1)
                 .withKI(0)
                 .withKD(0);
 
             spinConfig.MotionMagic
-                .withMotionMagicCruiseVelocity(80)
                 .withMotionMagicAcceleration(200)
                 .withMotionMagicJerk(1000);
             }
@@ -56,12 +56,12 @@ public class MotorConstants {
             spindexerConfig.Slot0
             .withKS(0)
             .withKV(0)
-                .withKA(0)
-                .withKP(1)
-                .withKI(0)
-                .withKD(0);
+            .withKA(0)
+            .withKP(1)
+            .withKI(0)
+            .withKD(0);
                 
-                spindexerConfig.MotionMagic
+            spindexerConfig.MotionMagic
                 .withMotionMagicAcceleration(200)
                 .withMotionMagicJerk(1000);
             }
@@ -104,9 +104,9 @@ public class MotorConstants {
                 .withKD(0);
 
             turretConfig.MotionMagic
-                .withMotionMagicCruiseVelocity(50)
-                .withMotionMagicAcceleration(200)
-                .withMotionMagicJerk(1000);
+                .withMotionMagicCruiseVelocity(20)
+                .withMotionMagicAcceleration(100)
+                .withMotionMagicJerk(500);
         }
 
         //hood
@@ -157,7 +157,7 @@ public class MotorConstants {
                 .withKS(0)
                 .withKV(0)
                 .withKA(0)
-                .withKP(0.1)
+                .withKP(1)
                 .withKI(0)
                 .withKD(0);
 

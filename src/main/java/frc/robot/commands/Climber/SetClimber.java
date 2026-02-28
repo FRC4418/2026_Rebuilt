@@ -38,7 +38,7 @@ public class SetClimber extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climberSubsystem.setClimberPos(up ? ManipulatorConstants.Climber.kClimberUpPos : ManipulatorConstants.Climber.kClimberDownPos);
+    climberSubsystem.setClimberPos(up ? ManipulatorConstants.ClimberConstants.kClimberUpPos : ManipulatorConstants.ClimberConstants.kClimberDownPos);
   }
 
   // Called once the command ends or is interrupted.
