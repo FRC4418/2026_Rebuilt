@@ -16,10 +16,14 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ManipulatorConstants.ShooterConstants;
+import frc.robot.constants.ManipulatorConstants;
 import frc.robot.constants.MotorConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -38,10 +42,12 @@ public class ShooterSubsystem extends SubsystemBase {
   final SparkClosedLoopController m_hoodController;
 
   private final DigitalInput m_limitSwitch = new DigitalInput(3);
+
+  private LimelightCamera turretCamera = new LimelightCamera("limelight-turret");
   
   public ShooterSubsystem() {
     m_shooterMotor.getConfigurator().apply(MotorConstants.Shooter.shooterConfig);
-    m_shooterMotorSlave.setControl(new Follower(MotorConstants.Shooter.kShooterMotorID, MotorAlignmentValue.Aligned));
+    m_shooterMotorSlave.setControl(new Follower(MotorConstants.Shooter.kShooterMotorID, MotorAlignmentValue.Opposed));
     m_turretMotor.getConfigurator().apply(MotorConstants.Shooter.turretConfig);
 
     m_hoodMotor.configure(
@@ -77,10 +83,25 @@ public class ShooterSubsystem extends SubsystemBase {
     m_turretMotor.setControl(m_turretRequest.withPosition(clamped * (ShooterConstants.turretRatio/360)));
   }
 
+  public Rotation2d getTurretPos(){
+    double turretMotorRot = m_turretMotor.getPosition().getValueAsDouble();
+
+    double turretRotations = turretMotorRot / ShooterConstants.turretRatio;
+
+    return Rotation2d.fromRotations(turretRotations);
+  }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+
+    Pose3d turretCenterPose = new Pose3d(ShooterConstants.turretPose, new Rotation3d(Rotation2d.kZero.getMeasure(), Rotation2d.kZero.getMeasure(), getTurretPos().getMeasure()));
+
+    turretCenterPose.transformBy(new Transform3d(ShooterConstants.turretCenterToLL, 0, 0, Rotation3d.kZero));
+
+    turretCenterPose.rotateBy(ShooterConstants.limelightAngle);
+
+    turretCamera.setCameraPoseRobotSpace(turretCenterPose);
+
     if(m_limitSwitch.get()){
       m_hoodMotor.getEncoder().setPosition(0);
     } 

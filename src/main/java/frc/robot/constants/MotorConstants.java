@@ -24,9 +24,12 @@ public class MotorConstants {
                 .withMotionMagicAcceleration(200)
                 .withMotionMagicJerk(1000);
             }
-    
 
-        public static final int kSpinMotorID = 21;
+        public static final int kActuatorSlaveID = 21;
+    
+        
+
+        public static final int kSpinMotorID = 22;
 
         public static final TalonFXConfiguration spinConfig = new TalonFXConfiguration();
 

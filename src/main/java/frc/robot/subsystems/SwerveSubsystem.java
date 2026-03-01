@@ -96,6 +96,8 @@ public class SwerveSubsystem extends SubsystemBase
   
   private LimelightCamera four = new LimelightCamera("limelight-four");
 
+  private LimelightCamera turretCamera = new LimelightCamera("limelight-turret");
+
   private ArrayList<LimelightCamera> cameras = new ArrayList<LimelightCamera>();
   // private LimelightCamera[] cameras = new LimelightCamera[2];
 
@@ -160,6 +162,7 @@ public class SwerveSubsystem extends SubsystemBase
 
     cameras.add(three);
     cameras.add(four);
+    cameras.add(turretCamera);
   }
 
   /**

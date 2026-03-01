@@ -4,9 +4,11 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,6 +19,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private final TalonFX m_intakeMotor = new TalonFX(MotorConstants.Intake.kSpinMotorID);
   private final TalonFX m_actuatorMotor = new TalonFX(MotorConstants.Intake.kActuatorMotorID);
+  private final TalonFX m_actuatorSlave = new TalonFX(MotorConstants.Intake.kActuatorSlaveID);
 
   private final MotionMagicVelocityVoltage m_intakeRequest = new MotionMagicVelocityVoltage(0);
   private final MotionMagicVoltage m_actuatorRequest = new MotionMagicVoltage(0);
@@ -49,6 +52,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     m_intakeMotor.getConfigurator().apply(MotorConstants.Intake.spinConfig);
     m_actuatorMotor.getConfigurator().apply(MotorConstants.Intake.actuatorConfig);
+    m_actuatorSlave.setControl(new Follower(MotorConstants.Intake.kActuatorMotorID, MotorAlignmentValue.Opposed));
 
     // m_leftIntakeMotor.getConfigurator().apply(MotorConstants.Intake.config);
     // m_rightIntakeMotor.getConfigurator().apply(MotorConstants.Intake.config);
