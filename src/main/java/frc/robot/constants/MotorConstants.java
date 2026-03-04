@@ -131,7 +131,7 @@ public class MotorConstants {
 
         //flywheel
         public static final int kShooterMotorID = 41;
-        public static final int kShooterSlaveID = 42;
+        public static final int kShooterSlaveID = 43;
 
         public static final TalonFXConfiguration shooterConfig = new TalonFXConfiguration();
 
