@@ -4,14 +4,12 @@
 
 package frc.robot.commands.Shooter;
 
-import static edu.wpi.first.units.Units.Rotation;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ManipulatorConstants;
+import frc.robot.constants.ManipulatorConstants.ShooterConstants;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.utils.TrajectoryCalculator;
@@ -37,7 +35,7 @@ public class AutoAim extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Pose2d globalRobotPose = m_swerveSubsystem.getPose();
+    Pose2d globalRobotPose = m_swerveSubsystem.getPose().transformBy(new Transform2d(ShooterConstants.turretPose.toTranslation2d(), Rotation2d.kZero));
     // Transform2d localTagPose = targetPose.minus(globalRobotPose);
 
     Pose2d localTagPos = targetPose.relativeTo(globalRobotPose);
