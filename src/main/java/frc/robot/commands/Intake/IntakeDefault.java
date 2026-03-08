@@ -27,8 +27,10 @@ public class IntakeDefault extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_intakeSubsystem.setActuatorPos(0);
-    m_intakeSubsystem.setIntakeVel(0);
+    // m_intakeSubsystem.setActuatorPos(0);
+    // m_intakeSubsystem.setIntakeVel(0);
+    m_intakeSubsystem.setIntakePercent(0);
+    m_intakeSubsystem.setActuatorPercent(0);
   }
 
   // Called once the command ends or is interrupted.

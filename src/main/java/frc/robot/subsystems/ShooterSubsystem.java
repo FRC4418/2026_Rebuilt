@@ -4,9 +4,12 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.revrobotics.PersistMode;
@@ -16,13 +19,17 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ManipulatorConstants.ShooterConstants;
+import frc.robot.utils.LimelightHelpers;
+import frc.robot.utils.LimelightHelpers.PoseEstimate;
 import frc.robot.constants.ManipulatorConstants;
 import frc.robot.constants.MotorConstants;
 
@@ -46,9 +53,12 @@ public class ShooterSubsystem extends SubsystemBase {
   private LimelightCamera turretCamera = new LimelightCamera("limelight-turret");
   
   public ShooterSubsystem() {
+    
+
     m_shooterMotor.getConfigurator().apply(MotorConstants.Shooter.shooterConfig);
     m_shooterMotorSlave.setControl(new Follower(MotorConstants.Shooter.kShooterMotorID, MotorAlignmentValue.Opposed));
     m_turretMotor.getConfigurator().apply(MotorConstants.Shooter.turretConfig);
+    // MotorOutputConfigs config = new MotorOutputConfigs().
 
     m_hoodMotor.configure(
       MotorConstants.Shooter.hoodConfig,
@@ -62,11 +72,25 @@ public class ShooterSubsystem extends SubsystemBase {
   
   
   public void setShooterVel(double vel){
-    m_shooterMotor.setControl(m_shooterRequest.withVelocity(vel));
+    m_shooterMotor.setControl(new VelocityDutyCycle(vel));
+  }
+
+  public void setShooterPercentOut(double percent){
+    m_shooterMotor.setControl(new DutyCycleOut(percent));
+  }
+
+  public void setHoodPercentOut(double percent){
+    m_hoodMotor.set(percent);
   }
 
   public void setHoodPos(double numRotations){
-    m_hoodController.setSetpoint(numRotations, SparkBase.ControlType.kMAXMotionPositionControl);
+    m_hoodController.setSetpoint(numRotations, SparkBase.ControlType.kPosition);
+    
+  }
+
+  public PoseEstimate getTurretPosEst(double robotYaw, double robotYawRate){
+    // return turretCamera.getLLHPose(robotYaw, robotYawRate);
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-turret");
   }
 
   public void setHoodPos(Rotation2d pos){
@@ -94,16 +118,17 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
 
-    Pose3d turretCenterPose = new Pose3d(ShooterConstants.turretPose, new Rotation3d(Rotation2d.kZero.getMeasure(), Rotation2d.kZero.getMeasure(), getTurretPos().getMeasure()));
+    // Pose3d turretCenterPose = new Pose3d(ShooterConstants.turretPose, new Rotation3d(Rotation2d.kZero.getMeasure(), Rotation2d.kZero.getMeasure(), getTurretPos().getMeasure()));
 
-    turretCenterPose.transformBy(new Transform3d(ShooterConstants.turretCenterToLL, 0, 0, Rotation3d.kZero));
+    // turretCenterPose.transformBy(new Transform3d(ShooterConstants.turretCenterToLL, 0, 0, Rotation3d.kZero));
 
-    turretCenterPose.rotateBy(ShooterConstants.limelightAngle);
+    // turretCenterPose.rotateBy(ShooterConstants.limelightAngle);
 
-    turretCamera.setCameraPoseRobotSpace(turretCenterPose);
+    // turretCamera.setCameraPoseRobotSpace(turretCenterPose);
 
-    if(m_limitSwitch.get()){
-      m_hoodMotor.getEncoder().setPosition(0);
-    } 
+    // if(m_limitSwitch.get()){
+    //   m_hoodMotor.getEncoder().setPosition(0);
+    // } 
+    SmartDashboard.putNumber("hood pos", m_hoodMotor.getEncoder().getPosition());
   }
 }

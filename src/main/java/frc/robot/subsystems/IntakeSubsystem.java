@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -11,6 +12,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ManipulatorConstants;
 import frc.robot.constants.MotorConstants;
@@ -67,6 +69,14 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void setActuatorPos(double position) {
     m_actuatorMotor.setControl(m_actuatorRequest.withPosition(position));
+  }
+
+  public void setIntakePercent(double percent){
+    m_intakeMotor.setControl(new DutyCycleOut(percent));
+  }
+
+  public void setActuatorPercent(double percent){
+    m_actuatorMotor.setControl(new DutyCycleOut(percent));
   }
 
 
@@ -141,8 +151,9 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if(m_limitSwitch.get()){
-      m_actuatorMotor.setPosition(0);
-    } 
+    // if(m_limitSwitch.get()){
+    //   m_actuatorMotor.setPosition(0);
+    // } 
+    SmartDashboard.putNumber("Intake Pos",m_actuatorMotor.getPosition().getValueAsDouble());
   }
 }

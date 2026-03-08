@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Climber.SetClimber;
@@ -29,6 +30,7 @@ import frc.robot.commands.Intake.IntakeDefault;
 import frc.robot.commands.Intake.SetIntake;
 import frc.robot.commands.Shooter.SetShooter;
 import frc.robot.commands.Shooter.ShooterDefault;
+import frc.robot.commands.Shooter.TestHood;
 import frc.robot.constants.ManipulatorConstants;
 import frc.robot.constants.ManipulatorConstants.ClimberConstants;
 import frc.robot.constants.ManipulatorConstants.IndexerConstants;
@@ -63,7 +65,7 @@ public class RobotContainer {
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(),
                                                                 () -> m_driverController.getLeftY() * -1,
                                                                 () -> m_driverController.getLeftX() * -1)
-                                                            .withControllerRotationAxis(() -> m_driverController.getRightX() * -1)
+                                                            .withControllerRotationAxis(() -> m_driverController.getRightX())
                                                             .deadband(0.1)
                                                             .scaleTranslation(0.8)
                                                             .allianceRelativeControl(true);
@@ -93,22 +95,23 @@ public class RobotContainer {
     m_intakeSubsystem.setDefaultCommand(new IntakeDefault(m_intakeSubsystem));
     m_indexerSubsystem.setDefaultCommand(new IndexerDefault(m_indexerSubsystem));
     m_shooterSubsystem.setDefaultCommand(new ShooterDefault(m_shooterSubsystem));
-    m_climberSubsystem.setDefaultCommand(new SetClimber(m_climberSubsystem, false));
+    m_climberSubsystem.setDefaultCommand(new SetClimberPercent(m_climberSubsystem, 0));
+
   }
 
   private void configureBindings() {
     DriverStation.silenceJoystickConnectionWarning(true);
 
-    m_driverController.leftTrigger().whileTrue(new SetIntake(m_intakeSubsystem, IntakeConstants.kIntakeSpeed, IntakeConstants.kIntakeDownPos));
-    m_driverController.b().toggleOnTrue(new SetIntake(m_intakeSubsystem, 0, IntakeConstants.kIntakeUpPos));
+    m_driverController.leftTrigger().whileTrue(new SetIntake(m_intakeSubsystem, 1, 3.6));
+    m_driverController.b().toggleOnTrue(new SetIntake(m_intakeSubsystem, 0, IntakeConstants.kIntakeDownPos));
 
-    m_driverController.y().whileTrue(new SetShooter(m_shooterSubsystem, 0, 100));
-    m_driverController.x().toggleOnTrue(new AutoAim(m_swerveSubsystem, m_shooterSubsystem, new Pose2d()));
+    m_driverController.y().whileTrue(new SetShooter(m_shooterSubsystem, 4.2, .65));
+    // m_driverController.x().toggleOnTrue(new AutoAim(m_swerveSubsystem, m_shooterSubsystem, new Pose2d()));
 
     m_driverController.rightTrigger().whileTrue(new SetIndexer(m_indexerSubsystem, IndexerConstants.kKickerSpeed, IndexerConstants.kSpindexerSpeed));
 
-    m_driverController.povUp().whileTrue(new SetClimberPercent(m_climberSubsystem, ClimberConstants.kClimberPercentSpeed));
-    m_driverController.povDown().whileTrue(new SetClimberPercent(m_climberSubsystem, -ClimberConstants.kClimberPercentSpeed));
+    m_driverController.povUp().whileTrue(new TestHood(m_shooterSubsystem, 0.3));
+    m_driverController.povDown().whileTrue(new TestHood(m_shooterSubsystem, -.3));
 
     m_driverController.a().onTrue(new InstantCommand(() -> m_swerveSubsystem.zeroGyro()));
 
@@ -116,8 +119,9 @@ public class RobotContainer {
   }
 
   public void addAutoOptions(){
-    chooser.setDefaultOption("New Path", getTestCommand());
+    chooser.setDefaultOption("Nothing", new InstantCommand());
     chooser.addOption("New Path", getTestCommand());
+    chooser.addOption("basic auto", basicShoot());
 
     SmartDashboard.putData("Auto Selector", chooser);
   }
@@ -137,6 +141,14 @@ public class RobotContainer {
     } catch (FileVersionException | IOException | ParseException e) {
       return null;
     }
+  }
+
+  public Command basicShoot(){
+    Command warmupShooter = new SetShooter(m_shooterSubsystem, 4.2, .65).raceWith(new WaitCommand(2));
+
+    Command shoot = new SetShooter(m_shooterSubsystem, 4.2, .65).alongWith(new SetIndexer(m_indexerSubsystem, -1,-1));
+
+    return warmupShooter.andThen(shoot);
   }
 
   public Command getTestCommand(){

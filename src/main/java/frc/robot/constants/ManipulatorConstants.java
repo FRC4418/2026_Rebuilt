@@ -1,13 +1,15 @@
 package frc.robot.constants;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 
 public class ManipulatorConstants {
     public static class ShooterConstants{
-        public static final double kShooterIdleSpeed = 100;
+        public static final double kShooterIdleSpeed = 0;
         public static final double kFeederSpeed = 100; 
         public static final double shooterHeight = 0.5771;
         public static final double wheelRadius = Units.inchesToMeters(2);
@@ -18,6 +20,9 @@ public class ManipulatorConstants {
         public static final double turretCenterToLL = Units.inchesToMeters(6.55);
 
         public static final Rotation3d limelightAngle = new Rotation3d(Rotation2d.kZero.getMeasure(), Rotation2d.fromDegrees(20).getMeasure(), Rotation2d.kZero.getMeasure());
+
+        public static final Translation2d blueHub = new Translation2d(4, 4.62);
+        public static final Translation2d redHub = new Translation2d(4, 11.915394);
 
         public static final double kHoodDefaultPos = 0;
         public static final double minHoodDegrees = 41.4;
@@ -33,8 +38,8 @@ public class ManipulatorConstants {
     public static class IntakeConstants{
         public static final double kIntakeSpeed = 100;
 
-        public static final double kIntakeUpPos = -10;
-        public static final double kIntakeDownPos = 0;
+        public static final double kIntakeUpPos = 0;
+        public static final double kIntakeDownPos = 3;
     }
 
     public static class ClimberConstants{
@@ -44,8 +49,8 @@ public class ManipulatorConstants {
     }
 
     public static class IndexerConstants{
-        public static final double kKickerSpeed = 80;
-        public static final double kSpindexerSpeed = 80;
+        public static final double kKickerSpeed = -100;
+        public static final double kSpindexerSpeed = -100;
     }
     
 }

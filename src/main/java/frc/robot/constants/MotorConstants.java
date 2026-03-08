@@ -1,6 +1,8 @@
 package frc.robot.constants;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class MotorConstants {
@@ -15,12 +17,14 @@ public class MotorConstants {
                 .withKS(0)
                 .withKV(0)
                 .withKA(0)
-                .withKP(1)
-                .withKI(0)
+                .withKP(.5)
+                .withKI(0.05)
                 .withKD(0);
 
+            actuatorConfig.withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(20));
+
             actuatorConfig.MotionMagic
-                .withMotionMagicCruiseVelocity(80)
+                .withMotionMagicCruiseVelocity(20)
                 .withMotionMagicAcceleration(200)
                 .withMotionMagicJerk(1000);
             }
@@ -38,13 +42,15 @@ public class MotorConstants {
                 .withKS(0)
                 .withKV(0)
                 .withKA(0)
-                .withKP(1)
+                .withKP(.1)
                 .withKI(0)
                 .withKD(0);
 
+            spinConfig.withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(30));
+
             spinConfig.MotionMagic
                 .withMotionMagicAcceleration(200)
-                .withMotionMagicJerk(1000);
+                .withMotionMagicJerk(200);
             }
     }
 
@@ -60,9 +66,11 @@ public class MotorConstants {
             .withKS(0)
             .withKV(0)
             .withKA(0)
-            .withKP(1)
+            .withKP(.1)
             .withKI(0)
             .withKD(0);
+
+            spindexerConfig.withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(30));
                 
             spindexerConfig.MotionMagic
                 .withMotionMagicAcceleration(200)
@@ -80,9 +88,11 @@ public class MotorConstants {
                 .withKS(0)
                 .withKV(0)
                 .withKA(0)
-                .withKP(1)
+                .withKP(.1)
                 .withKI(0)
                 .withKD(0);
+
+            kickerConfig.withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(30));
 
             kickerConfig.MotionMagic
                 .withMotionMagicAcceleration(200)
@@ -102,12 +112,14 @@ public class MotorConstants {
                 .withKS(0)
                 .withKV(0)
                 .withKA(0)
-                .withKP(0.5)
+                .withKP(0.2)
                 .withKI(0)
                 .withKD(0);
 
+            turretConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
             turretConfig.MotionMagic
-                .withMotionMagicCruiseVelocity(20)
+                .withMotionMagicCruiseVelocity(30)
                 .withMotionMagicAcceleration(100)
                 .withMotionMagicJerk(500);
         }
@@ -123,7 +135,7 @@ public class MotorConstants {
                 .maxAcceleration(100);
 
             hoodConfig.closedLoop
-                .p(0.5)
+                .p(.1)
                 .i(0)
                 .d(0)
                 .outputRange(-1, 1);
@@ -136,11 +148,15 @@ public class MotorConstants {
         public static final TalonFXConfiguration shooterConfig = new TalonFXConfiguration();
 
         static {
+            shooterConfig.MotorOutput.PeakReverseDutyCycle = 0;
+            
+            shooterConfig.withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(20));
+
             shooterConfig.Slot0
                 .withKS(0)
                 .withKV(0)
                 .withKA(0)
-                .withKP(1)
+                .withKP(.1)
                 .withKI(0)
                 .withKD(0);
 
@@ -160,7 +176,7 @@ public class MotorConstants {
                 .withKS(0)
                 .withKV(0)
                 .withKA(0)
-                .withKP(1)
+                .withKP(.1)
                 .withKI(0)
                 .withKD(0);
 

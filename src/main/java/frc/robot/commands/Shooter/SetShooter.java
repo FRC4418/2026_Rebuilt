@@ -36,7 +36,8 @@ public class SetShooter extends Command {
   public void initialize() {
     m_shooterSubsystem.setTurretPos(turretPos);
     m_shooterSubsystem.setHoodPos(hoodPos);
-    m_shooterSubsystem.setShooterVel(shooterSpeed);
+    // m_shooterSubsystem.setShooterVel(shooterSpeed);
+    m_shooterSubsystem.setShooterPercentOut(shooterSpeed);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

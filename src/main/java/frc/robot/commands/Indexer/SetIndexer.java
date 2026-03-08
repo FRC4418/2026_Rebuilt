@@ -29,8 +29,9 @@ public class SetIndexer extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_indexerSubsystem.setKickerVel(kickerVel);
-    m_indexerSubsystem.setSpindexerVel(spindexerVel);
+    // m_indexerSubsystem.setKickerVel(kickerVel);
+    // m_indexerSubsystem.setSpindexerVel(spindexerVel);
+    m_indexerSubsystem.setPercent(kickerVel);
   }
 
   // Called once the command ends or is interrupted.

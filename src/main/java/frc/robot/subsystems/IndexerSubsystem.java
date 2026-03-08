@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -29,12 +30,19 @@ public class IndexerSubsystem extends SubsystemBase {
     return m_beamBreak.get();
   }
 
+
+
   public void setSpindexerVel(double vel) {
     m_spindexerMotor.setControl(m_spindexerRequest.withVelocity(vel));
   }
 
   public void setKickerVel(double vel){
     m_kickerMotor.setControl(m_kickerRequest.withVelocity(vel));
+  }
+
+  public void setPercent(double percent){
+    m_kickerMotor.setControl(new DutyCycleOut(percent));
+    m_spindexerMotor.setControl(new DutyCycleOut(percent));
   }
 
   @Override

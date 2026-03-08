@@ -30,7 +30,8 @@ public class ShooterDefault extends Command {
   public void execute() {
     m_shooterSubsystem.setTurretPos(Rotation2d.kZero);
     m_shooterSubsystem.setShooterVel(ShooterConstants.kShooterIdleSpeed);
-    m_shooterSubsystem.setHoodPos(ShooterConstants.kHoodDefaultPos);
+    // m_shooterSubsystem.setHoodPos(ShooterConstants.kHoodDefaultPos);
+    m_shooterSubsystem.setHoodPercentOut(0);
   }
 
   // Called once the command ends or is interrupted.
