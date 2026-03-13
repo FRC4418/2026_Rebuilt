@@ -13,6 +13,7 @@ import com.pathplanner.lib.util.FileVersionException;
 import org.json.simple.parser.ParseException;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -35,6 +36,7 @@ import frc.robot.constants.ManipulatorConstants;
 import frc.robot.constants.ManipulatorConstants.ClimberConstants;
 import frc.robot.constants.ManipulatorConstants.IndexerConstants;
 import frc.robot.constants.ManipulatorConstants.IntakeConstants;
+import frc.robot.constants.ManipulatorConstants.ShooterConstants;
 import frc.robot.commands.Shooter.AutoAim;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
@@ -100,13 +102,18 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+
+
+    
+    SmartDashboard.putNumber("Shooter Vel Auto", 0);
+    SmartDashboard.putNumber("Shooter Pos Auto", 0);
     DriverStation.silenceJoystickConnectionWarning(true);
 
     m_driverController.leftTrigger().whileTrue(new SetIntake(m_intakeSubsystem, 1, 3.6));
     m_driverController.b().toggleOnTrue(new SetIntake(m_intakeSubsystem, 0, IntakeConstants.kIntakeDownPos));
 
-    m_driverController.y().whileTrue(new SetShooter(m_shooterSubsystem, 4.2, .65));
-    // m_driverController.x().toggleOnTrue(new AutoAim(m_swerveSubsystem, m_shooterSubsystem, new Pose2d()));
+    m_driverController.y().whileTrue(new SetShooter(m_shooterSubsystem, 4.2, 70));
+    m_driverController.x().whileTrue(new AutoAim(m_swerveSubsystem, m_shooterSubsystem, new Pose2d(ShooterConstants.blueHub, Rotation2d.kZero)));
 
     m_driverController.rightTrigger().whileTrue(new SetIndexer(m_indexerSubsystem, IndexerConstants.kKickerSpeed, IndexerConstants.kSpindexerSpeed));
 

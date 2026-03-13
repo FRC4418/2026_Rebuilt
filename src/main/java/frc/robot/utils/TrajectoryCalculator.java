@@ -4,7 +4,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import limelight.Limelight;
 
 public class TrajectoryCalculator{
-    private static Limelight limelight = new Limelight("left");
+    // private static Limelight limelight = new Limelight("left");
 
     // private static final double[][] optimalPoses = {
     //     // numbers from https://github.com/LukeG65536/TrajectoryCalculator in findline.py
@@ -43,15 +43,23 @@ public class TrajectoryCalculator{
     // };
 
     private static final double optimalPoses[][] = {
-        {0.1, .2, 80},
+        {1.65, 2.9, 50},
+        {2.09, 3.35, 53.67},
+        {2.36, 4.1, 49},
+        {2.88, 4.5, 53},
+        {3.33, 5.05, 57},
+        {3.5, 5.05, 58},
+        {3.8, 5.1, 60},
+        {4.5, 5.3, 67},
+        {6.1, 5.3, 73},
     };
 
-    public static Rotation2d getAngle(double dist){
+    public static double getAngle(double dist){
         int i;
         for(i = 0; i < optimalPoses.length-2; i++){
             if(optimalPoses[i][0] > dist) break;//have dist be inbetween i and i+1
         }//then to linear aproximation between i and i + 1
-        return Rotation2d.fromRadians(interpolate(dist, optimalPoses[i][0],optimalPoses[i+1][0],optimalPoses[i][1],optimalPoses[i+1][1]));
+        return interpolate(dist, optimalPoses[i][0],optimalPoses[i+1][0],optimalPoses[i][1],optimalPoses[i+1][1]);
     }
 
     public static double getVelocity(double dist){

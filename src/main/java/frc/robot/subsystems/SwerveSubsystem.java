@@ -96,7 +96,7 @@ public class SwerveSubsystem extends SubsystemBase
   
   private LimelightCamera four = new LimelightCamera("limelight-four");
 
-  private LimelightCamera turretCamera = new LimelightCamera("limelight-turret");
+  // private LimelightCamera turret = new LimelightCamera("limelight-turret");
 
   private ArrayList<LimelightCamera> cameras = new ArrayList<LimelightCamera>();
   // private LimelightCamera[] cameras = new LimelightCamera[2];
@@ -162,7 +162,7 @@ public class SwerveSubsystem extends SubsystemBase
 
     cameras.add(three);
     cameras.add(four);
-    cameras.add(turretCamera);
+    // cameras.add(turret);
   }
 
   /**
@@ -224,6 +224,14 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void simulationPeriodic()
   {
+  }
+
+  public double getYaw(){
+    return m_gyro.getYaw();
+  }
+
+  public double getYawRate(){
+    return m_gyro.getRate();
   }
 
   /**

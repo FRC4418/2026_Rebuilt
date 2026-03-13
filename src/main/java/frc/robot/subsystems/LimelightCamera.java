@@ -37,6 +37,10 @@ public class LimelightCamera {
         return est;
     }
 
+    public void setPipeline(int pipeline){
+        LimelightHelpers.setPipelineIndex(name, pipeline);
+    }
+
     public void setIMUMode(int mode){
         LimelightHelpers.SetIMUMode(name, mode);
     }

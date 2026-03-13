@@ -25,6 +25,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ManipulatorConstants.ShooterConstants;
@@ -50,9 +51,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final DigitalInput m_limitSwitch = new DigitalInput(3);
 
-  private LimelightCamera turretCamera = new LimelightCamera("limelight-turret");
+  public LimelightCamera turretCamera = new LimelightCamera("limelight-turret");
   
   public ShooterSubsystem() {
+    
     
 
     m_shooterMotor.getConfigurator().apply(MotorConstants.Shooter.shooterConfig);
@@ -129,6 +131,17 @@ public class ShooterSubsystem extends SubsystemBase {
     // if(m_limitSwitch.get()){
     //   m_hoodMotor.getEncoder().setPosition(0);
     // } 
+    if(DriverStation.isEnabled()){
+      // System.out.println("setting pipe to 1");
+      turretCamera.setPipeline(1);
+    }else{
+      turretCamera.setPipeline(0);
+    }
+
     SmartDashboard.putNumber("hood pos", m_hoodMotor.getEncoder().getPosition());
+
+    SmartDashboard.putNumber("Shooter Vel", m_shooterMotor.getVelocity().getValueAsDouble());
+
+    SmartDashboard.putNumber("Shooter Current", m_shooterMotor.getStatorCurrent().getValueAsDouble());
   }
 }

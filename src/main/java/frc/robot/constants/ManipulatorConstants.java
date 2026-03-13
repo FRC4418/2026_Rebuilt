@@ -21,8 +21,8 @@ public class ManipulatorConstants {
 
         public static final Rotation3d limelightAngle = new Rotation3d(Rotation2d.kZero.getMeasure(), Rotation2d.fromDegrees(20).getMeasure(), Rotation2d.kZero.getMeasure());
 
-        public static final Translation2d blueHub = new Translation2d(4, 4.62);
-        public static final Translation2d redHub = new Translation2d(4, 11.915394);
+        public static final Translation2d blueHub = new Translation2d(4.620000067, 4.00067);
+        public static final Translation2d redHub = new Translation2d(4, 11.9153940067);
 
         public static final double kHoodDefaultPos = 0;
         public static final double minHoodDegrees = 41.4;

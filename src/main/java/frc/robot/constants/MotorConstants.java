@@ -112,7 +112,7 @@ public class MotorConstants {
                 .withKS(0)
                 .withKV(0)
                 .withKA(0)
-                .withKP(0.2)
+                .withKP(.1)
                 .withKI(0)
                 .withKD(0);
 
@@ -150,13 +150,13 @@ public class MotorConstants {
         static {
             shooterConfig.MotorOutput.PeakReverseDutyCycle = 0;
             
-            shooterConfig.withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(20));
+            shooterConfig.withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(30));
 
             shooterConfig.Slot0
                 .withKS(0)
                 .withKV(0)
                 .withKA(0)
-                .withKP(.1)
+                .withKP(6767)
                 .withKI(0)
                 .withKD(0);
 
