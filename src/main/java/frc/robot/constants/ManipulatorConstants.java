@@ -9,7 +9,7 @@ import edu.wpi.first.math.util.Units;
 
 public class ManipulatorConstants {
     public static class ShooterConstants{
-        public static final double kShooterIdleSpeed = 0;
+        public static final double kShooterIdleSpeed = -5;
         public static final double kFeederSpeed = 100; 
         public static final double shooterHeight = 0.5771;
         public static final double wheelRadius = Units.inchesToMeters(2);
@@ -36,10 +36,10 @@ public class ManipulatorConstants {
     }
 
     public static class IntakeConstants{
-        public static final double kIntakeSpeed = 100;
+        public static final double kIntakeSpeed = 1;
 
         public static final double kIntakeUpPos = 0;
-        public static final double kIntakeDownPos = 3;
+        public static final double kIntakeDownPos = 3.6;
     }
 
     public static class ClimberConstants{

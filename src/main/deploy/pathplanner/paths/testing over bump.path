@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.534450784593438,
-        "y": 6.241041369472183
+        "x": 3.560156626506024,
+        "y": 5.674156626506024
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5640513552068476,
-        "y": 6.249186875891583
+        "x": 4.560156626506029,
+        "y": 5.674156626506024
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.2794008559201138,
-        "y": 6.241041369472183
+        "x": 6.0079638554216865,
+        "y": 5.674156626506024
       },
       "prevControl": {
-        "x": 3.3144935805991436,
-        "y": 6.2539800285306715
+        "x": 5.0079638554216865,
+        "y": 5.674156626506024
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.3581027667984222,
+      "rotationDegrees": 45.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -178.492564241225
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Middle Rush",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -179.1449026037333
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

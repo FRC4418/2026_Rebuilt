@@ -51,7 +51,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final DigitalInput m_limitSwitch = new DigitalInput(3);
 
-  public LimelightCamera turretCamera = new LimelightCamera("limelight-turret");
+  // public LimelightCamera turretCamera = new LimelightCamera("limelight-turret");
   
   public ShooterSubsystem() {
     
@@ -90,10 +90,10 @@ public class ShooterSubsystem extends SubsystemBase {
     
   }
 
-  public PoseEstimate getTurretPosEst(double robotYaw, double robotYawRate){
-    // return turretCamera.getLLHPose(robotYaw, robotYawRate);
-    return LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-turret");
-  }
+  // public PoseEstimate getTurretPosEst(double robotYaw, double robotYawRate){
+  //   // return turretCamera.getLLHPose(robotYaw, robotYawRate);
+  //   return LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-turret");
+  // }
 
   public void setHoodPos(Rotation2d pos){
     
@@ -131,12 +131,12 @@ public class ShooterSubsystem extends SubsystemBase {
     // if(m_limitSwitch.get()){
     //   m_hoodMotor.getEncoder().setPosition(0);
     // } 
-    if(DriverStation.isEnabled()){
-      // System.out.println("setting pipe to 1");
-      turretCamera.setPipeline(1);
-    }else{
-      turretCamera.setPipeline(0);
-    }
+    // if(DriverStation.isEnabled()){
+    //   // System.out.println("setting pipe to 1");
+    //   turretCamera.setPipeline(1);
+    // }else{
+    //   turretCamera.setPipeline(0);
+    // }
 
     SmartDashboard.putNumber("hood pos", m_hoodMotor.getEncoder().getPosition());
 

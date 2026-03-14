@@ -86,8 +86,6 @@ public class SwerveSubsystem extends SubsystemBase
    */
   private final SwerveDrive swerveDrive;
 
-  private final Field2d m_field = new Field2d(); 
-
   private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
 
   private final Orchestra m_orchestra = new Orchestra();
@@ -96,7 +94,7 @@ public class SwerveSubsystem extends SubsystemBase
   
   private LimelightCamera four = new LimelightCamera("limelight-four");
 
-  // private LimelightCamera turret = new LimelightCamera("limelight-turret");
+  private LimelightCamera turret = new LimelightCamera("limelight-turret");
 
   private ArrayList<LimelightCamera> cameras = new ArrayList<LimelightCamera>();
   // private LimelightCamera[] cameras = new LimelightCamera[2];
@@ -162,7 +160,10 @@ public class SwerveSubsystem extends SubsystemBase
 
     cameras.add(three);
     cameras.add(four);
-    // cameras.add(turret);
+    cameras.add(turret);
+    for(var camera:cameras){
+      camera.setIMUMode(0);
+    }
   }
 
   /**
@@ -193,13 +194,21 @@ public class SwerveSubsystem extends SubsystemBase
 
   public void updateVision()
   {
-    double yaw = (double) m_gyro.getYaw();
-    double yawRate = m_gyro.getRate();
+    // double yaw = (double) m_gyro.getYaw();
+    // double yawRate = m_gyro.getRate();
+    double yaw = getPose().getRotation().getDegrees();
+
+    double yawRate = Units.radiansToDegrees(swerveDrive.getRobotVelocity().omegaRadiansPerSecond);
 
     double bestTotalArea = 0;
     PoseEstimate bestEst = null;
 
     for (var camera : cameras){
+      if (DriverStation.isEnabled()) {
+        camera.setPipeline(1);
+      }else{
+        camera.setPipeline(0);
+      }
       PoseEstimate curEst = camera.getLLHPose(yaw, yawRate);
 
       double area = curEst.avgTagArea * curEst.tagCount;
