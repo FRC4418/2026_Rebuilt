@@ -77,6 +77,11 @@ public class ShooterSubsystem extends SubsystemBase {
     m_shooterMotor.setControl(new VelocityDutyCycle(vel));
   }
 
+  public double getShooterVel(){
+    return m_shooterMotor.getVelocity().getValueAsDouble();
+  }
+
+
   public void setShooterPercentOut(double percent){
     m_shooterMotor.setControl(new DutyCycleOut(percent));
   }

@@ -36,7 +36,8 @@ public class ManipulatorConstants {
     }
 
     public static class IntakeConstants{
-        public static final double kIntakeSpeed = 1;
+        public static final double kIntakeSpeedPercent = 1;
+        public static final double kIntakeStallPercent = 0.2;
 
         public static final double kIntakeUpPos = 0;
         public static final double kIntakeDownPos = 3.6;

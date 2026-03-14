@@ -4,42 +4,39 @@
 
 package frc.robot.commands.Shooter;
 
-import java.util.function.DoubleSupplier;
-
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.ManipulatorConstants;
+import frc.robot.constants.ManipulatorConstants.IndexerConstants;
 import frc.robot.constants.ManipulatorConstants.ShooterConstants;
+import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.utils.LimelightHelpers;
 import frc.robot.utils.TrajectoryCalculator;
 import swervelib.SwerveInputStream;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class AutoAim extends Command {
-  private SwerveSubsystem m_swerveSubsystem;
+public class AutoShoot extends Command {
+ private SwerveSubsystem m_swerveSubsystem;
   private ShooterSubsystem m_shooterSubsystem;
+  private IndexerSubsystem m_indexerSubsystem;
   private Pose2d targetPose;
   private SwerveInputStream input;
 
   private PIDController rotationPID = new PIDController(2, 0.7, 0.1);
 
   /** Creates a new AutoAim. */
-  public AutoAim(SwerveSubsystem swerveSubsystem, DoubleSupplier x, DoubleSupplier y, ShooterSubsystem shooterSubsystem, Pose2d targetPose) {
+  public AutoShoot(SwerveSubsystem swerveSubsystem, SwerveInputStream input, ShooterSubsystem shooterSubsystem, IndexerSubsystem indexerSubsystem, Pose2d targetPose) {
     this.m_swerveSubsystem = swerveSubsystem;
     this.m_shooterSubsystem = shooterSubsystem;
+    this.m_indexerSubsystem = indexerSubsystem;
     this.targetPose = targetPose;
-
-    this.input = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(), x, y);
-    rotationPID.setSetpoint(0);
+    this.input = input;
+    rotationPID.setSetpoint(-0.05);
     
     addRequirements(swerveSubsystem, shooterSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -81,7 +78,7 @@ public class AutoAim extends Command {
 
   
 
-    m_swerveSubsystem.driveFieldOriented(input.withControllerRotationAxis(() -> -rotationPID.calculate(localTargetPos.getTranslation().getAngle().getRadians())));
+    m_swerveSubsystem.driveFieldOriented(input.withControllerRotationAxis(() -> rotationPID.calculate(localTargetPos.getTranslation().getAngle().getRadians())));
     
     //m_swerveSubsystem.drive(new Translation2d(0, 0), -rotationPID.calculate(localTargetPos.getTranslation().getAngle().getRadians()), false);
 
@@ -113,7 +110,17 @@ public class AutoAim extends Command {
 
     // m_shooterSubsystem.setTurretPos(0);
 
+    if(withinRange(m_shooterSubsystem.getShooterVel(), shooterVel, 5) && withinRange(localTargetPos.getTranslation().getAngle().getRadians(), rotationPID.getSetpoint(), 0.067)){
+      m_indexerSubsystem.setPercent(100);
+    }
 
+  }
+
+  private boolean withinRange(double value, double targetValue, double range){
+    if(Math.abs(value-targetValue) <= range){
+      return true;
+    }
+    return false;
   }
 
   // Called once the command ends or is interrupted.
