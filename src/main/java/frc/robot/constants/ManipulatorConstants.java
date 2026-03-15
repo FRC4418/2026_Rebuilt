@@ -15,14 +15,16 @@ public class ManipulatorConstants {
         public static final double wheelRadius = Units.inchesToMeters(2);
         public static final double tipSpeedToBallSpeed = .8;
 
-        public static final Translation3d turretPose = new Translation3d(Units.inchesToMeters(-4.2785), Units.inchesToMeters(8.9345), shooterHeight);
+        public static final Translation3d turretPose = new Translation3d(Units.inchesToMeters(-4.2785), Units.inchesToMeters(-8.9345), shooterHeight);
 
         public static final double turretCenterToLL = Units.inchesToMeters(6.55);
 
         public static final Rotation3d limelightAngle = new Rotation3d(Rotation2d.kZero.getMeasure(), Rotation2d.fromDegrees(20).getMeasure(), Rotation2d.kZero.getMeasure());
 
         public static final Translation2d blueHub = new Translation2d(4.620000067, 4.00067);
-        public static final Translation2d redHub = new Translation2d(4, 11.9153940067);
+
+
+        public static final Translation2d redHub = new Translation2d(11.9153940067, 4.00067);
 
         public static final double kHoodDefaultPos = 0;
         public static final double minHoodDegrees = 41.4;
@@ -37,7 +39,7 @@ public class ManipulatorConstants {
 
     public static class IntakeConstants{
         public static final double kIntakeSpeedPercent = 1;
-        public static final double kIntakeStallPercent = 0.2;
+        public static final double kIntakeStallPercent = 0.1;
 
         public static final double kIntakeUpPos = 0;
         public static final double kIntakeDownPos = 3.6;

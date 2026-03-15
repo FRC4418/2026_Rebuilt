@@ -75,6 +75,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.subsystems.LimelightCamera;
+import frc.robot.utils.LimelightHelpers;
 // import limelight.networktables.PoseEstimate;
 import frc.robot.utils.LimelightHelpers.PoseEstimate;
 
@@ -90,7 +91,7 @@ public class SwerveSubsystem extends SubsystemBase
 
   private final Orchestra m_orchestra = new Orchestra();
 
-  private LimelightCamera three = new LimelightCamera("limelight-three");
+  // private LimelightCamera three = new LimelightCamera("limelight-three");
   
   private LimelightCamera four = new LimelightCamera("limelight-four");
 
@@ -158,12 +159,14 @@ public class SwerveSubsystem extends SubsystemBase
 
     setupPathPlanner();
 
-    cameras.add(three);
+    // cameras.add(three);
     cameras.add(four);
     cameras.add(turret);
     for(var camera:cameras){
       camera.setIMUMode(0);
     }
+    four.setIMUMode(0);
+    
   }
 
   /**
@@ -197,8 +200,9 @@ public class SwerveSubsystem extends SubsystemBase
     // double yaw = (double) m_gyro.getYaw();
     // double yawRate = m_gyro.getRate();
     double yaw = getPose().getRotation().getDegrees();
-
     double yawRate = Units.radiansToDegrees(swerveDrive.getRobotVelocity().omegaRadiansPerSecond);
+
+    LimelightHelpers.SetRobotOrientation("limelight-four", yaw, yawRate, 0, 0, 0, 0);
 
     double bestTotalArea = 0;
     PoseEstimate bestEst = null;

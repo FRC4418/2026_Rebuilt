@@ -17,11 +17,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -35,6 +37,7 @@ import frc.robot.commands.Intake.SetIntakePercent;
 import frc.robot.commands.Shooter.AutoAim;
 import frc.robot.commands.Shooter.SetShooter;
 import frc.robot.commands.Shooter.ShooterDefault;
+import frc.robot.constants.ManipulatorConstants;
 import frc.robot.constants.ManipulatorConstants.IndexerConstants;
 import frc.robot.constants.ManipulatorConstants.IntakeConstants;
 import frc.robot.constants.ManipulatorConstants.ShooterConstants;
@@ -54,11 +57,13 @@ public class RobotContainer {
   private IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
   private ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
-  private ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
+  // private ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
 
   private SendableChooser<Command> chooser = new SendableChooser<Command>();
 
   private final CommandXboxController m_driverController = new CommandXboxController(0);
+
+  private Pose2d targetPose;
 
   // ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(); 
 
@@ -77,6 +82,12 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    targetPose = new Pose2d(ShooterConstants.blueHub, Rotation2d.kZero);
+
+    if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)){
+      targetPose = new Pose2d(ShooterConstants.redHub, Rotation2d.k180deg);
+    }
+
     setDefaultCommands(); 
     configureBindings();
     addAutoOptions();
@@ -97,7 +108,7 @@ public class RobotContainer {
     m_intakeSubsystem.setDefaultCommand(new IntakeDefault(m_intakeSubsystem));
     m_indexerSubsystem.setDefaultCommand(new IndexerDefault(m_indexerSubsystem));
     m_shooterSubsystem.setDefaultCommand(new ShooterDefault(m_shooterSubsystem));
-    m_climberSubsystem.setDefaultCommand(new SetClimberPercent(m_climberSubsystem, 0));
+    // m_climberSubsystem.setDefaultCommand(new SetClimberPercent(m_climberSubsystem, 0));
 
   }
 
@@ -113,7 +124,7 @@ public class RobotContainer {
     m_driverController.b().onTrue(new SetIntake(m_intakeSubsystem, 0, IntakeConstants.kIntakeDownPos));
     m_driverController.y().onTrue(new SetIntake(m_intakeSubsystem, 0, IntakeConstants.kIntakeUpPos));
 
-    m_driverController.x().whileTrue(new AutoAim(m_swerveSubsystem, () -> m_driverController.getLeftY() * -1, () -> m_driverController.getLeftX() * -1, m_shooterSubsystem, new Pose2d(ShooterConstants.blueHub, Rotation2d.kZero)));
+    m_driverController.x().whileTrue(new AutoAim(m_swerveSubsystem, () -> m_driverController.getLeftY() * -1, () -> m_driverController.getLeftX() * -1, m_shooterSubsystem, targetPose));
 
     m_driverController.rightTrigger().whileTrue(new SetIndexer(m_indexerSubsystem, IndexerConstants.kKickerSpeed, IndexerConstants.kSpindexerSpeed));
 
@@ -128,12 +139,14 @@ public class RobotContainer {
     SmartDashboard.putData("Zero Gyro", new InstantCommand( () -> m_swerveSubsystem.zeroGyro() ));
   }
 
+
   public void addAutoOptions(){
     chooser.setDefaultOption("Nothing", new InstantCommand());
     chooser.addOption("New Path", getTestCommand());
     chooser.addOption("basic auto", basicShoot());
     chooser.addOption("depot one", depotOneCycle());
     chooser.addOption("big one", middleRush());
+    chooser.addOption("left mid rush", oneSideBump());
 
     SmartDashboard.putData("Auto Selector", chooser);
   }
@@ -171,6 +184,7 @@ public class RobotContainer {
     Command toDepot = AutoBuilder.followPath(firstPath);
 
     Command intake = new SetIntake(m_intakeSubsystem, IntakeConstants.kIntakeSpeedPercent, IntakeConstants.kIntakeDownPos)
+                            .raceWith(new WaitCommand(1))
                             .andThen(new SetIntakePercent(m_intakeSubsystem, IntakeConstants.kIntakeSpeedPercent, IntakeConstants.kIntakeStallPercent));
   
     Command toShoot = AutoBuilder.followPath(getPath("depot to shoot"));
@@ -195,7 +209,7 @@ public class RobotContainer {
 
     Command intakeAround = AutoBuilder.followPath(firstPath).raceWith(new WaitCommand(0.8).andThen(intake));
 
-    Command aim = new AutoAim(m_swerveSubsystem, () -> m_driverController.getLeftY() * -1, () -> m_driverController.getLeftX() * -1, m_shooterSubsystem, new Pose2d(ShooterConstants.blueHub, Rotation2d.kZero));
+    Command aim = new AutoAim(m_swerveSubsystem, () -> 0, () -> 0, m_shooterSubsystem, new Pose2d(ShooterConstants.blueHub, Rotation2d.kZero));
 
     Command shoot = new SetIndexer(m_indexerSubsystem, IndexerConstants.kKickerSpeed, IndexerConstants.kSpindexerSpeed);
 
@@ -214,11 +228,11 @@ public class RobotContainer {
 
     Command intakeAround = AutoBuilder.followPath(firstPath).raceWith(new WaitCommand(0.8).andThen(intake));
 
-    Command aim = new AutoAim(m_swerveSubsystem, () -> m_driverController.getLeftY() * -1, () -> m_driverController.getLeftX() * -1, m_shooterSubsystem, new Pose2d(ShooterConstants.blueHub, Rotation2d.kZero));
+    Command aim = new AutoAim(m_swerveSubsystem, () -> m_driverController.getLeftY() * -1, () -> m_driverController.getLeftX() * -1, m_shooterSubsystem, targetPose);
 
     Command shoot = new SetIndexer(m_indexerSubsystem, IndexerConstants.kKickerSpeed, IndexerConstants.kSpindexerSpeed);
 
-    Command wholeThing = new ParallelCommandGroup(aim, new WaitCommand(2).andThen(shoot), new SetIntake(m_intakeSubsystem, IntakeConstants.kIntakeSpeedPercent, IntakeConstants.kIntakeDownPos));
+    Command wholeThing = new ParallelCommandGroup(aim, new WaitCommand(1).andThen(shoot), new SetIntake(m_intakeSubsystem, IntakeConstants.kIntakeSpeedPercent, IntakeConstants.kIntakeDownPos));
 
     return new SequentialCommandGroup(resetPose, intakeAround, wholeThing);
   }
@@ -240,6 +254,10 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)){
+      targetPose = new Pose2d(ShooterConstants.redHub, Rotation2d.k180deg);
+    }
+
     // An example command will be run in autonomous
     return chooser.getSelected();
   }

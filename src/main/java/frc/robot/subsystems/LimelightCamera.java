@@ -32,6 +32,8 @@ public class LimelightCamera {
     public PoseEstimate getLLHPose(double yaw, double yawRate){
         LimelightHelpers.SetRobotOrientation(name, yaw, yawRate, 0, 0, 0, 0);
 
+        // System.out.println("Set the yaw of " + name + " to " + yaw);
+
         LimelightHelpers.PoseEstimate est = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
         
         return est;

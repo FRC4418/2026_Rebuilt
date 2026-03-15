@@ -43,6 +43,7 @@ public class TrajectoryCalculator{
     // };
 
     private static final double optimalPoses[][] = {
+        {1.2, 1.5, 50},
         {1.65, 2.9, 50},
         {2.09, 3.35, 53.67},
         {2.36, 4.1, 49},
@@ -50,8 +51,9 @@ public class TrajectoryCalculator{
         {3.33, 5.05, 57},
         {3.5, 5.05, 58},
         {3.8, 5.1, 60},
-        {4.5, 5.3, 67},
-        {6.1, 5.3, 73},
+        {4.5, 5.2, 67},
+        {5.3, 5.2, 71},
+        {6.4, 5.2, 78},
     };
 
     public static double getAngle(double dist){

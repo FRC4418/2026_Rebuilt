@@ -13,6 +13,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ManipulatorConstants;
@@ -29,6 +31,8 @@ public class AutoAim extends Command {
   private ShooterSubsystem m_shooterSubsystem;
   private Pose2d targetPose;
   private SwerveInputStream input;
+  private DoubleSupplier x;
+  private DoubleSupplier y;
 
   private PIDController rotationPID = new PIDController(2, 0.7, 0.1);
 
@@ -37,12 +41,20 @@ public class AutoAim extends Command {
     this.m_swerveSubsystem = swerveSubsystem;
     this.m_shooterSubsystem = shooterSubsystem;
     this.targetPose = targetPose;
+    this.x = x;
+    this.y = y;
 
     this.input = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(), x, y);
     rotationPID.setSetpoint(0);
+
     
     addRequirements(swerveSubsystem, shooterSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
+    if(DriverStation.getAlliance().isEmpty()) return;
+
+    if(DriverStation.getAlliance().get().equals(Alliance.Red)){
+
+    }
   }
 
   // Called when the command is initially scheduled.
@@ -81,9 +93,9 @@ public class AutoAim extends Command {
 
   
 
-    m_swerveSubsystem.driveFieldOriented(input.withControllerRotationAxis(() -> -rotationPID.calculate(localTargetPos.getTranslation().getAngle().getRadians())));
+    // m_swerveSubsystem.driveFieldOriented(input.withControllerRotationAxis(() -> -rotationPID.calculate(localTargetPos.getTranslation().getAngle().getRadians())));
     
-    //m_swerveSubsystem.drive(new Translation2d(0, 0), -rotationPID.calculate(localTargetPos.getTranslation().getAngle().getRadians()), false);
+    m_swerveSubsystem.drive(new Translation2d(-x.getAsDouble(), -y.getAsDouble()), -rotationPID.calculate(localTargetPos.getTranslation().getAngle().getRadians()), true);
 
 
     double dist = localTargetPos.getTranslation().getNorm();
