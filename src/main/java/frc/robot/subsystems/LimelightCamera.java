@@ -39,6 +39,10 @@ public class LimelightCamera {
         return est;
     }
 
+    public PoseEstimate getLLHPoseMT1(){
+        return LimelightHelpers.getBotPoseEstimate_wpiBlue(name);
+    }
+
     public void setPipeline(int pipeline){
         LimelightHelpers.setPipelineIndex(name, pipeline);
     }

@@ -238,6 +238,25 @@ public class RobotContainer {
 
     return new SequentialCommandGroup(resetPose, intakeAround, wholeThing);
   }
+  
+  public Command oneSideBumpRight(){
+    PathPlannerPath firstPath = getPath("one side bump right");
+
+    Command resetPose = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(firstPath.getStartingHolonomicPose().get()));
+
+    Command intake = new SetIntake(m_intakeSubsystem, IntakeConstants.kIntakeSpeedPercent, IntakeConstants.kIntakeDownPos)
+                            .andThen(new SetIntakePercent(m_intakeSubsystem, IntakeConstants.kIntakeSpeedPercent, IntakeConstants.kIntakeStallPercent));
+
+    Command intakeAround = AutoBuilder.followPath(firstPath).raceWith(new WaitCommand(0.8).andThen(intake));
+
+    Command aim = new AutoAim(m_swerveSubsystem, () -> 0, () -> 0, m_shooterSubsystem, targetPose);
+
+    Command shoot = new SetIndexer(m_indexerSubsystem, IndexerConstants.kKickerSpeed, IndexerConstants.kSpindexerSpeed);
+
+    Command wholeThing = new ParallelCommandGroup(aim, new WaitCommand(1).andThen(shoot), new SetIntake(m_intakeSubsystem, IntakeConstants.kIntakeSpeedPercent, IntakeConstants.kIntakeDownPos));
+
+    return new SequentialCommandGroup(resetPose, intakeAround, wholeThing);
+  }
 
   public Command getTestCommand(){
 

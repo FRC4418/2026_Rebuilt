@@ -4,14 +4,15 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Meter;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-
-import java.io.IOException;
 
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.Logger;
@@ -19,27 +20,38 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.DriveFeedforwards;
+import com.pathplanner.lib.util.swerve.SwerveSetpoint;
+import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
+import com.studica.frc.AHRS;
+import com.studica.frc.AHRS.NavXComType;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
-
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.Meter;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.constants.DriveConstants;
+import frc.robot.utils.LimelightHelpers;
+// import limelight.networktables.PoseEstimate;
+import frc.robot.utils.LimelightHelpers.PoseEstimate;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -51,33 +63,6 @@ import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
-
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.commands.PathfindingCommand;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj.Timer;
-
-import edu.wpi.first.wpilibj2.command.Commands;
-
-import java.util.concurrent.atomic.AtomicReference;
-
-import com.pathplanner.lib.util.swerve.SwerveSetpoint;
-import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
-import com.studica.frc.AHRS;
-import com.studica.frc.AHRS.NavXComType;
-import com.pathplanner.lib.util.DriveFeedforwards;
-
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import frc.robot.subsystems.LimelightCamera;
-import frc.robot.utils.LimelightHelpers;
-// import limelight.networktables.PoseEstimate;
-import frc.robot.utils.LimelightHelpers.PoseEstimate;
 
 
 public class SwerveSubsystem extends SubsystemBase
@@ -165,7 +150,9 @@ public class SwerveSubsystem extends SubsystemBase
     for(var camera:cameras){
       camera.setIMUMode(0);
     }
-    four.setIMUMode(0);
+
+    swerveDrive.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,.5));;
+
     
   }
 
@@ -206,6 +193,7 @@ public class SwerveSubsystem extends SubsystemBase
 
     double bestTotalArea = 0;
     PoseEstimate bestEst = null;
+    PoseEstimate bestMT1 = null;
 
     for (var camera : cameras){
       if (DriverStation.isEnabled()) {
@@ -215,13 +203,18 @@ public class SwerveSubsystem extends SubsystemBase
       }
       PoseEstimate curEst = camera.getLLHPose(yaw, yawRate);
 
+      PoseEstimate curMT1 = camera.getLLHPoseMT1();
+
       double area = curEst.avgTagArea * curEst.tagCount;
+
+
 
       Logger.recordOutput("vision/"+camera.name+"-area", area);
 
       if(area > bestTotalArea){
         bestTotalArea = area;
         bestEst = curEst;
+        bestMT1 = curMT1;
       }
     }
 
@@ -230,7 +223,12 @@ public class SwerveSubsystem extends SubsystemBase
     // PoseEstimate est = bestEst.get();
 
     if(bestEst == null) return;
-    // swerveDrive.setVisionMeasurementStdDevs(null);
+
+    //if our mt1 is accurate and saying were at a different yaw, then use mt1 to chage the robot yaw
+    if(bestTotalArea > .5 && bestMT1.tagCount > 1 && Math.abs(yaw - bestMT1.pose.getRotation().getDegrees()) > 10){
+      swerveDrive.addVisionMeasurement(bestMT1.pose, bestMT1.timestampSeconds);
+      return;
+    }
 
     swerveDrive.addVisionMeasurement(bestEst.pose, bestEst.timestampSeconds);
   }
