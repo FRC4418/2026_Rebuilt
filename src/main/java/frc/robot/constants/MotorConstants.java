@@ -46,7 +46,7 @@ public class MotorConstants {
                 .withKI(0)
                 .withKD(0);
 
-            spinConfig.withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(30));
+            spinConfig.withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(60));
 
             spinConfig.MotionMagic
                 .withMotionMagicAcceleration(200)
@@ -70,7 +70,7 @@ public class MotorConstants {
             .withKI(0)
             .withKD(0);
 
-            spindexerConfig.withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(30));
+            spindexerConfig.withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(60));
                 
             spindexerConfig.MotionMagic
                 .withMotionMagicAcceleration(200)
@@ -92,7 +92,7 @@ public class MotorConstants {
                 .withKI(0)
                 .withKD(0);
 
-            kickerConfig.withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(30));
+            kickerConfig.withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(60));
 
             kickerConfig.MotionMagic
                 .withMotionMagicAcceleration(200)
@@ -150,7 +150,7 @@ public class MotorConstants {
         static {
             shooterConfig.MotorOutput.PeakReverseDutyCycle = 0;
             
-            shooterConfig.withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(30));
+            shooterConfig.withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(60));
 
             shooterConfig.Slot0
                 .withKS(0)

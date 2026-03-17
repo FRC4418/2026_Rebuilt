@@ -34,7 +34,7 @@ public class AutoAim extends Command {
   private DoubleSupplier x;
   private DoubleSupplier y;
 
-  private PIDController rotationPID = new PIDController(2, 0.7, 0.1);
+  private PIDController rotationPID = new PIDController(3, 0.9, 0.2);
 
   /** Creates a new AutoAim. */
   public AutoAim(SwerveSubsystem swerveSubsystem, DoubleSupplier x, DoubleSupplier y, ShooterSubsystem shooterSubsystem, Pose2d targetPose) {
