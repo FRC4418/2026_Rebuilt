@@ -40,9 +40,12 @@ public class IndexerSubsystem extends SubsystemBase {
     m_kickerMotor.setControl(m_kickerRequest.withVelocity(vel));
   }
 
-  public void setPercent(double percent){
-    m_kickerMotor.setControl(new DutyCycleOut(percent));
+  public void setSpindexerPercent(double percent){
     m_spindexerMotor.setControl(new DutyCycleOut(percent));
+  }
+
+  public void setKickerPercent(double percent){
+    m_kickerMotor.setControl(new DutyCycleOut(percent));
   }
 
   @Override

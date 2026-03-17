@@ -10,13 +10,13 @@ import frc.robot.subsystems.IndexerSubsystem;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class SetIndexer extends Command {
   private IndexerSubsystem m_indexerSubsystem;
-  private double kickerVel;
-  private double spindexerVel;
+  private double kickerPercent;
+  private double spindexerPercent;
   /** Creates a new SetIndexer. */
-  public SetIndexer(IndexerSubsystem indexerSubsystem, double kickerVel, double spindexerVel) {
+  public SetIndexer(IndexerSubsystem indexerSubsystem, double kickerPercent, double spindexerPercent) {
     m_indexerSubsystem = indexerSubsystem;
-    this.kickerVel = kickerVel;
-    this.spindexerVel = spindexerVel;
+    this.kickerPercent = kickerPercent;
+    this.spindexerPercent = spindexerPercent;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(indexerSubsystem);
   }
@@ -31,7 +31,8 @@ public class SetIndexer extends Command {
   public void execute() {
     // m_indexerSubsystem.setKickerVel(kickerVel);
     // m_indexerSubsystem.setSpindexerVel(spindexerVel);
-    m_indexerSubsystem.setPercent(kickerVel);
+    m_indexerSubsystem.setSpindexerPercent(spindexerPercent);
+    m_indexerSubsystem.setKickerPercent(kickerPercent);
   }
 
   // Called once the command ends or is interrupted.

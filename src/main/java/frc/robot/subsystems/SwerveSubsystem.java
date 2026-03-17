@@ -230,6 +230,7 @@ public class SwerveSubsystem extends SubsystemBase
     // PoseEstimate est = bestEst.get();
 
     if(bestEst == null) return;
+    // swerveDrive.setVisionMeasurementStdDevs(null);
 
     swerveDrive.addVisionMeasurement(bestEst.pose, bestEst.timestampSeconds);
   }

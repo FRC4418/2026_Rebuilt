@@ -32,6 +32,7 @@ import frc.robot.commands.Climber.SetClimberPercent;
 import frc.robot.commands.Indexer.IndexerDefault;
 import frc.robot.commands.Indexer.SetIndexer;
 import frc.robot.commands.Intake.IntakeDefault;
+import frc.robot.commands.Intake.JiggleIntake;
 import frc.robot.commands.Intake.SetIntake;
 import frc.robot.commands.Intake.SetIntakePercent;
 import frc.robot.commands.Shooter.AutoAim;
@@ -126,8 +127,9 @@ public class RobotContainer {
 
     m_driverController.x().whileTrue(new AutoAim(m_swerveSubsystem, () -> m_driverController.getLeftY() * -1, () -> m_driverController.getLeftX() * -1, m_shooterSubsystem, targetPose));
 
-    m_driverController.rightTrigger().whileTrue(new SetIndexer(m_indexerSubsystem, IndexerConstants.kKickerSpeed, IndexerConstants.kSpindexerSpeed));
+    m_driverController.rightTrigger().whileTrue(new SetIndexer(m_indexerSubsystem, IndexerConstants.kKickerSpeed, IndexerConstants.kSpindexerSpeed).alongWith(new JiggleIntake(m_intakeSubsystem, 1, .3)));
 
+    m_driverController.rightBumper().whileTrue(new SetShooter(m_shooterSubsystem, 4.3, 60));
     // m_driverController.povUp().whileTrue(new TestHood(m_shooterSubsystem, 0.3));
     // m_driverController.povDown().whileTrue(new TestHood(m_shooterSubsystem, -.3));
 
@@ -146,7 +148,7 @@ public class RobotContainer {
     chooser.addOption("basic auto", basicShoot());
     chooser.addOption("depot one", depotOneCycle());
     chooser.addOption("big one", middleRush());
-    chooser.addOption("left mid rush", oneSideBump());
+    chooser.addOption("left mid rush", oneSideBumpLeft());
 
     SmartDashboard.putData("Auto Selector", chooser);
   }
@@ -218,8 +220,8 @@ public class RobotContainer {
     return new SequentialCommandGroup(resetPose, intakeAround, wholeThing);
   }
 
-  public Command oneSideBump(){
-    PathPlannerPath firstPath = getPath("one side bump");
+  public Command oneSideBumpLeft(){
+    PathPlannerPath firstPath = getPath("one side bump left");
 
     Command resetPose = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(firstPath.getStartingHolonomicPose().get()));
 

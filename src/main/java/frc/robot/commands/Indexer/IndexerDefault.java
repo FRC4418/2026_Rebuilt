@@ -26,7 +26,8 @@ public class IndexerDefault extends Command {
   public void execute() {
     // m_indexerSubsystem.setKickerVel(0);
     // m_indexerSubsystem.setSpindexerVel(0);
-    m_indexerSubsystem.setPercent(0);
+    m_indexerSubsystem.setSpindexerPercent(0);
+    m_indexerSubsystem.setKickerPercent(0);
   }
 
   // Called once the command ends or is interrupted.

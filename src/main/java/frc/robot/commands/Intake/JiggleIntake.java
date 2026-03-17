@@ -4,32 +4,53 @@
 
 package frc.robot.commands.Intake;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.ManipulatorConstants.IndexerConstants;
+import frc.robot.constants.ManipulatorConstants.IntakeConstants;
 import frc.robot.subsystems.IntakeSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class SetIntakePercent extends Command {
+public class JiggleIntake extends Command {
   private IntakeSubsystem m_intakeSubsystem;
-  private double intakePercent;
-  private double actuatorPercent;
-  /** Creates a new SetIntakePercent. */
-  public SetIntakePercent(IntakeSubsystem intakeSubsystem, double intakePercent, double actuatorPercent) {
-    m_intakeSubsystem = intakeSubsystem; 
-    this.intakePercent = intakePercent;
-    this.actuatorPercent = actuatorPercent;
+  private double dist;
+  private double period;
+  private Timer timer;
+  private boolean up = false;
+  /** Creates a new JiggleIntake. */
+  public JiggleIntake(IntakeSubsystem intakeSubsystem, double dist, double period) {
+    m_intakeSubsystem = intakeSubsystem;
+    this.dist = dist;
+    this.period = period;
+    timer = new Timer();
+
+
     addRequirements(m_intakeSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    timer.start();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_intakeSubsystem.setActuatorPercent(actuatorPercent);
-    m_intakeSubsystem.setIntakePercent(intakePercent);
+    double cur = timer.get();
+    if (cur > period){
+      up = !up;
+      timer.restart();
+    }
+
+    double pos = IntakeConstants.kIntakeDownPos;
+
+    if(up) pos -= dist;
+
+    m_intakeSubsystem.setActuatorPos(pos);
+
+    
   }
 
   // Called once the command ends or is interrupted.

@@ -111,7 +111,7 @@ public class AutoShoot extends Command {
     // m_shooterSubsystem.setTurretPos(0);
 
     if(withinRange(m_shooterSubsystem.getShooterVel(), shooterVel, 5) && withinRange(localTargetPos.getTranslation().getAngle().getRadians(), rotationPID.getSetpoint(), 0.067)){
-      m_indexerSubsystem.setPercent(100);
+      m_indexerSubsystem.setSpindexerPercent(100);
     }
 
   }
