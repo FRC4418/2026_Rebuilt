@@ -41,7 +41,7 @@ public class AutoAim extends Command {
     this.m_swerveSubsystem = swerveSubsystem;
     this.m_shooterSubsystem = shooterSubsystem;
     this.targetPose = targetPose;
-    this.x = y;
+    this.x = x;
     this.y = y;
 
     this.input = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(), x, y);
