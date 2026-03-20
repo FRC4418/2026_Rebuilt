@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ManipulatorConstants;
 import frc.robot.constants.MotorConstants;
+import frc.robot.constants.ManipulatorConstants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
 
@@ -64,7 +65,9 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void setIntakeVel(double vel){
-    m_intakeMotor.setControl(m_intakeRequest.withVelocity(vel));
+    if(getIntakePos() > IntakeConstants.kIntakeNetSafePos){
+      m_intakeMotor.setControl(m_intakeRequest.withVelocity(vel));
+    }
   }
 
   public void setActuatorPos(double position) {
@@ -72,7 +75,9 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void setIntakePercent(double percent){
-    m_intakeMotor.setControl(new DutyCycleOut(percent));
+    if(getIntakePos() > IntakeConstants.kIntakeNetSafePos){
+      m_intakeMotor.setControl(new DutyCycleOut(percent));
+    }
   }
 
   public void setActuatorPercent(double percent){
@@ -148,6 +153,10 @@ public class IntakeSubsystem extends SubsystemBase {
   //   } 
   //}
 
+  public double getIntakePos(){
+    return m_actuatorMotor.getPosition().getValueAsDouble();
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -155,5 +164,7 @@ public class IntakeSubsystem extends SubsystemBase {
     //   m_actuatorMotor.setPosition(0);
     // } 
     SmartDashboard.putNumber("Intake Pos",m_actuatorMotor.getPosition().getValueAsDouble());
+
+    SmartDashboard.putNumber("Intake current", m_intakeMotor.getSupplyCurrent().getValueAsDouble());
   }
 }

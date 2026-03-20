@@ -44,6 +44,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -83,6 +84,9 @@ public class SwerveSubsystem extends SubsystemBase
   private LimelightCamera turret = new LimelightCamera("limelight-turret");
 
   private ArrayList<LimelightCamera> cameras = new ArrayList<LimelightCamera>();
+
+  private ArrayList<TalonFX> driveMotors = new ArrayList<TalonFX>();
+  private ArrayList<TalonFX> angleMotors = new ArrayList<TalonFX>();
   // private LimelightCamera[] cameras = new LimelightCamera[2];
 
   /**
@@ -130,9 +134,12 @@ public class SwerveSubsystem extends SubsystemBase
             TalonFXSwerve yagslTalonDrive = (TalonFXSwerve) module.getDriveMotor();
             TalonFXSwerve yagslTalonAngle = (TalonFXSwerve) module.getAngleMotor();
             
-            TalonFX rawTalon1 = (com.ctre.phoenix6.hardware.TalonFX) yagslTalonDrive.getMotor();
-            TalonFX rawTalon2 = (com.ctre.phoenix6.hardware.TalonFX) yagslTalonAngle.getMotor();
+            TalonFX rawTalonDrive = (com.ctre.phoenix6.hardware.TalonFX) yagslTalonDrive.getMotor();
+            TalonFX rawTalonAngle = (com.ctre.phoenix6.hardware.TalonFX) yagslTalonAngle.getMotor();
             
+            driveMotors.add(rawTalonDrive);
+            angleMotors.add(rawTalonAngle);
+
             // m_orchestra.addInstrument(rawTalon1);
             // m_orchestra.addInstrument(rawTalon2);
 
@@ -179,6 +186,9 @@ public class SwerveSubsystem extends SubsystemBase
     Logger.recordOutput("gyro raw", m_gyro.getYaw());
 
     Logger.recordOutput("Pose",swerveDrive.getPose());
+
+    SmartDashboard.putNumber("Swerve drive current", driveMotors.get(0).getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Swerve angle current", angleMotors.get(0).getSupplyCurrent().getValueAsDouble());
   }
 
 
@@ -225,7 +235,7 @@ public class SwerveSubsystem extends SubsystemBase
     if(bestEst == null) return;
 
     //if our mt1 is accurate and saying were at a different yaw, then use mt1 to chage the robot yaw
-    if(bestTotalArea > .5 && bestMT1.tagCount > 1 && Math.abs(yaw - bestMT1.pose.getRotation().getDegrees()) > 10){
+    if(bestTotalArea > .5 && bestMT1.tagCount > 1 && Math.abs(yaw - bestMT1.pose.getRotation().getDegrees()) > 5){
       swerveDrive.addVisionMeasurement(bestMT1.pose, bestMT1.timestampSeconds);
       return;
     }
@@ -298,7 +308,7 @@ public class SwerveSubsystem extends SubsystemBase
             var alliance = DriverStation.getAlliance();
             if (alliance.isPresent())
             {
-              return alliance.get() == DriverStation.Alliance.Red;
+              // return alliance.get() == DriverStation.Alliance.Red;
             }
             return false;
           },

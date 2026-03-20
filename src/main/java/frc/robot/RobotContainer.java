@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Supplier;
 
 import org.json.simple.parser.ParseException;
 
@@ -35,6 +36,7 @@ import frc.robot.commands.Intake.IntakeDefault;
 import frc.robot.commands.Intake.JiggleIntake;
 import frc.robot.commands.Intake.SetIntake;
 import frc.robot.commands.Intake.SetIntakePercent;
+import frc.robot.commands.Intake.ToggleIntake;
 import frc.robot.commands.Shooter.AutoAim;
 import frc.robot.commands.Shooter.SetShooter;
 import frc.robot.commands.Shooter.ShooterDefault;
@@ -64,7 +66,7 @@ public class RobotContainer {
 
   private final CommandXboxController m_driverController = new CommandXboxController(0);
 
-  private Pose2d targetPose;
+  private Supplier<Pose2d> targetPose;
 
   // ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(); 
 
@@ -83,12 +85,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    targetPose = new Pose2d(ShooterConstants.blueHub, Rotation2d.kZero);
-
-    if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)){
-      targetPose = new Pose2d(ShooterConstants.redHub, Rotation2d.k180deg);
-    }
-
+    targetPose = () -> (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) ? new Pose2d(ShooterConstants.redHub, Rotation2d.k180deg) : new Pose2d(ShooterConstants.blueHub, Rotation2d.kZero);;
+      
     setDefaultCommands(); 
     configureBindings();
     addAutoOptions();
@@ -119,21 +117,31 @@ public class RobotContainer {
     
     SmartDashboard.putNumber("Shooter Vel Auto", 0);
     SmartDashboard.putNumber("Shooter Pos Auto", 0);
+    SmartDashboard.putNumber("shooting angle offset", -0.035);
+    SmartDashboard.putNumber("hood offset", -0.9);
+    SmartDashboard.putNumber("speed offset", 3);
+    SmartDashboard.putNumber("spindexer speed", -.5);
+    SmartDashboard.putBoolean("red", false);
     DriverStation.silenceJoystickConnectionWarning(true);
 
     m_driverController.leftTrigger().whileTrue(new SetIntakePercent(m_intakeSubsystem, IntakeConstants.kIntakeSpeedPercent, IntakeConstants.kIntakeStallPercent));
-    m_driverController.b().onTrue(new SetIntake(m_intakeSubsystem, 0, IntakeConstants.kIntakeDownPos));
+    // m_driverController.b().onTrue(new SetIntake(m_intakeSubsystem, 0, IntakeConstants.kIntakeDownPos));
+    m_driverController.b().whileTrue(new ToggleIntake(m_intakeSubsystem));
     m_driverController.y().onTrue(new SetIntake(m_intakeSubsystem, 0, IntakeConstants.kIntakeUpPos));
 
     m_driverController.x().whileTrue(new AutoAim(m_swerveSubsystem, () -> m_driverController.getLeftY() * -1, () -> m_driverController.getLeftX() * -1, m_shooterSubsystem, targetPose));
 
-    m_driverController.rightTrigger().whileTrue(new SetIndexer(m_indexerSubsystem, IndexerConstants.kKickerSpeed, IndexerConstants.kSpindexerSpeed).alongWith(new JiggleIntake(m_intakeSubsystem, 1, .3)));
+    m_driverController.rightTrigger().whileTrue(new SetIndexer(m_indexerSubsystem, IndexerConstants.kKickerSpeed, IndexerConstants.kSpindexerSpeed)
+      .alongWith(new JiggleIntake(m_intakeSubsystem, 1.5, .5))
+    );
 
-    m_driverController.rightBumper().whileTrue(new SetShooter(m_shooterSubsystem, 4.3, 60));
+    m_driverController.povLeft().whileTrue(new SetIntakePercent(m_intakeSubsystem, -.5, 0));
+
+    m_driverController.rightBumper().whileTrue(new SetShooter(m_shooterSubsystem, 5.3, 60));
     // m_driverController.povUp().whileTrue(new TestHood(m_shooterSubsystem, 0.3));
     // m_driverController.povDown().whileTrue(new TestHood(m_shooterSubsystem, -.3));
 
-    m_driverController.a().onTrue(new InstantCommand(() -> m_swerveSubsystem.zeroGyro()));
+    // m_driverController.a().onTrue(new InstantCommand(() -> m_swerveSubsystem.zeroGyro()));
 
     m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d())));
     m_driverController.leftBumper().onTrue(new InstantCommand( () -> m_swerveSubsystem.zeroGyro() ));
@@ -142,13 +150,15 @@ public class RobotContainer {
   }
 
 
-  public void addAutoOptions(){
+  public void addAutoOptions(){ 
     chooser.setDefaultOption("Nothing", new InstantCommand());
     chooser.addOption("New Path", getTestCommand());
     chooser.addOption("basic auto", basicShoot());
     chooser.addOption("depot one", depotOneCycle());
+    chooser.addOption("depot angled", depotAngled());
     chooser.addOption("big one", middleRush());
     chooser.addOption("left mid rush", oneSideBumpLeft());
+    chooser.addOption("right mid rush", oneSideBumpRight());
 
     SmartDashboard.putData("Auto Selector", chooser);
   }
@@ -185,19 +195,39 @@ public class RobotContainer {
 
     Command toDepot = AutoBuilder.followPath(firstPath);
 
-    Command intake = new SetIntake(m_intakeSubsystem, IntakeConstants.kIntakeSpeedPercent, IntakeConstants.kIntakeDownPos)
+    Command intake = new SetIntake(m_intakeSubsystem, 0, IntakeConstants.kIntakeDownPos)
                             .raceWith(new WaitCommand(1))
                             .andThen(new SetIntakePercent(m_intakeSubsystem, IntakeConstants.kIntakeSpeedPercent, IntakeConstants.kIntakeStallPercent));
   
     Command toShoot = AutoBuilder.followPath(getPath("depot to shoot"));
 
-    Command aim = new AutoAim(m_swerveSubsystem, () -> m_driverController.getLeftY() * -1, () -> m_driverController.getLeftX() * -1, m_shooterSubsystem, new Pose2d(ShooterConstants.blueHub, Rotation2d.kZero));
+    Command aim = new AutoAim(m_swerveSubsystem, () -> 0, () -> 0, m_shooterSubsystem, targetPose);
 
     Command shoot = new SetIndexer(m_indexerSubsystem, IndexerConstants.kKickerSpeed, IndexerConstants.kSpindexerSpeed);
 
-    Command wholeThing = new ParallelCommandGroup(aim, new WaitCommand(2).andThen(shoot), new SetIntake(m_intakeSubsystem, IntakeConstants.kIntakeSpeedPercent, IntakeConstants.kIntakeDownPos));
+    Command wholeThing = new ParallelCommandGroup(aim, new WaitCommand(1.5).andThen(shoot), new SetIntake(m_intakeSubsystem, IntakeConstants.kIntakeSpeedPercent, IntakeConstants.kIntakeDownPos));
 
     return new SequentialCommandGroup(resetPose, toDepot.raceWith(intake), toShoot, wholeThing);
+  }
+
+  public Command depotAngled() {
+    PathPlannerPath path = getPath("angled depot");
+
+    Command resetPose = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(path.getStartingHolonomicPose().get()));
+
+    Command followPath = AutoBuilder.followPath(path);
+
+    Command intake = new SetIntake(m_intakeSubsystem, 0, IntakeConstants.kIntakeDownPos)
+                            .raceWith(new WaitCommand(1))
+                            .andThen(new SetIntakePercent(m_intakeSubsystem, IntakeConstants.kIntakeSpeedPercent, IntakeConstants.kIntakeStallPercent));
+
+    Command aim = new AutoAim(m_swerveSubsystem, () -> 0, () -> 0, m_shooterSubsystem, targetPose);
+
+    Command shoot = new SetIndexer(m_indexerSubsystem, IndexerConstants.kKickerSpeed, IndexerConstants.kSpindexerSpeed);
+
+    Command wholeThing = new ParallelCommandGroup(aim, new WaitCommand(1.5).andThen(shoot), new SetIntake(m_intakeSubsystem, IntakeConstants.kIntakeSpeedPercent, IntakeConstants.kIntakeDownPos));
+
+    return new SequentialCommandGroup(resetPose, followPath.raceWith(intake), wholeThing);
   }
 
   public Command middleRush(){
@@ -211,7 +241,7 @@ public class RobotContainer {
 
     Command intakeAround = AutoBuilder.followPath(firstPath).raceWith(new WaitCommand(0.8).andThen(intake));
 
-    Command aim = new AutoAim(m_swerveSubsystem, () -> 0, () -> 0, m_shooterSubsystem, new Pose2d(ShooterConstants.blueHub, Rotation2d.kZero));
+    Command aim = new AutoAim(m_swerveSubsystem, () -> 0, () -> 0, m_shooterSubsystem, targetPose);
 
     Command shoot = new SetIndexer(m_indexerSubsystem, IndexerConstants.kKickerSpeed, IndexerConstants.kSpindexerSpeed);
 
@@ -244,7 +274,7 @@ public class RobotContainer {
 
     Command resetPose = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(firstPath.getStartingHolonomicPose().get()));
 
-    Command intake = new SetIntake(m_intakeSubsystem, IntakeConstants.kIntakeSpeedPercent, IntakeConstants.kIntakeDownPos)
+    Command intake = new SetIntake(m_intakeSubsystem, 0, IntakeConstants.kIntakeDownPos)
                             .andThen(new SetIntakePercent(m_intakeSubsystem, IntakeConstants.kIntakeSpeedPercent, IntakeConstants.kIntakeStallPercent));
 
     Command intakeAround = AutoBuilder.followPath(firstPath).raceWith(new WaitCommand(0.8).andThen(intake));
@@ -260,7 +290,7 @@ public class RobotContainer {
 
   public Command getTestCommand(){
 
-    PathPlannerPath path = getPath("testing over bump");
+    PathPlannerPath path = getPath("New Path");
 
     Command drivePath = AutoBuilder.followPath(path);
 
@@ -275,9 +305,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)){
-      targetPose = new Pose2d(ShooterConstants.redHub, Rotation2d.k180deg);
-    }
+    
 
     // An example command will be run in autonomous
     return chooser.getSelected();

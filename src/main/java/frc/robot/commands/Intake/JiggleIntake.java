@@ -38,17 +38,26 @@ public class JiggleIntake extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double cur = timer.get();
-    if (cur > period){
-      up = !up;
-      timer.restart();
+    m_intakeSubsystem.setIntakePercent(IntakeConstants.kIntakeSpeedPercent);
+    // double cur = timer.get();
+    // if (cur > period){
+    //   up = !up;
+    //   timer.restart();
+    // }
+
+    // double pos = IntakeConstants.kIntakeDownPos;
+
+    // if(up) pos -= dist;
+
+    // m_intakeSubsystem.setActuatorPos(pos);
+
+
+
+    if(m_intakeSubsystem.getIntakePos() > 3.5){
+      m_intakeSubsystem.setActuatorPercent(-.3);
+    }else{
+      m_intakeSubsystem.setActuatorPercent(.3);
     }
-
-    double pos = IntakeConstants.kIntakeDownPos;
-
-    if(up) pos -= dist;
-
-    m_intakeSubsystem.setActuatorPos(pos);
 
     
   }

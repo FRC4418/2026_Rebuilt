@@ -43,6 +43,8 @@ public class ManipulatorConstants {
 
         public static final double kIntakeUpPos = 0;
         public static final double kIntakeDownPos = 3.6;
+        public static final double kIntakeMiddlePos = (kIntakeDownPos + kIntakeUpPos) / 2;
+        public static final double kIntakeNetSafePos = 3;
     }
 
     public static class ClimberConstants{

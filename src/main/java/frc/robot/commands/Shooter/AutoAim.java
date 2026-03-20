@@ -5,6 +5,7 @@
 package frc.robot.commands.Shooter;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -34,18 +35,17 @@ public class AutoAim extends Command {
   private DoubleSupplier x;
   private DoubleSupplier y;
 
-  private PIDController rotationPID = new PIDController(3, 0.9, 0.2);
+  private PIDController rotationPID = new PIDController(4, 1.2, 0.2);
 
   /** Creates a new AutoAim. */
-  public AutoAim(SwerveSubsystem swerveSubsystem, DoubleSupplier x, DoubleSupplier y, ShooterSubsystem shooterSubsystem, Pose2d targetPose) {
+  public AutoAim(SwerveSubsystem swerveSubsystem, DoubleSupplier x, DoubleSupplier y, ShooterSubsystem shooterSubsystem, Supplier<Pose2d> targetPose) {
     this.m_swerveSubsystem = swerveSubsystem;
     this.m_shooterSubsystem = shooterSubsystem;
-    this.targetPose = targetPose;
+    this.targetPose = targetPose.get();
     this.x = x;
     this.y = y;
 
     this.input = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(), x, y);
-    rotationPID.setSetpoint(0);
 
     
     addRequirements(swerveSubsystem, shooterSubsystem);
@@ -60,6 +60,10 @@ public class AutoAim extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    rotationPID.setSetpoint(SmartDashboard.getNumber("shooting angle offset", 0));
+
+    targetPose = (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) ? new Pose2d(ShooterConstants.redHub, Rotation2d.k180deg) : new Pose2d(ShooterConstants.blueHub, Rotation2d.kZero);
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -115,10 +119,10 @@ public class AutoAim extends Command {
 
     // double shooterTargetRPS = (ManipulatorConstants.ShooterConstants.tipSpeedToBallSpeed*shooterExitVelMPS) / (2 * Math.PI * ManipulatorConstants.ShooterConstants.wheelRadius);
 
-    // m_shooterSubsystem.setHoodPos(SmartDashboard.getNumber("Shooter Pos Auto", 0));
-    // m_shooterSubsystem.setShooterVel(SmartDashboard.getNumber("Shooter Vel Auto", 0));
-    m_shooterSubsystem.setHoodPos(shooterPos);
-    m_shooterSubsystem.setShooterVel(shooterVel);
+    //m_shooterSubsystem.setHoodPos(SmartDashboard.getNumber("Shooter Pos Auto", 0));
+    //m_shooterSubsystem.setShooterVel(SmartDashboard.getNumber("Shooter Vel Auto", 0));
+    m_shooterSubsystem.setHoodPos(shooterPos + SmartDashboard.getNumber("hood offset", 0));
+    m_shooterSubsystem.setShooterVel(shooterVel + SmartDashboard.getNumber("speed offset", 0));
 
     Logger.recordOutput("target shooter pos", shooterPos);
     Logger.recordOutput("target shooter vel", shooterVel);

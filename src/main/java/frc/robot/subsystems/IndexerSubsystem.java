@@ -9,6 +9,7 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.MotorConstants;
 
@@ -50,6 +51,8 @@ public class IndexerSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("Spindexer Current", m_spindexerMotor.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Kicker Current", m_kickerMotor.getSupplyCurrent().getValueAsDouble());
     // This method will be called once per scheduler run
   }
 }
