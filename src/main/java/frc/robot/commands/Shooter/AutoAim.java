@@ -16,13 +16,13 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.ManipulatorConstants;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.constants.ManipulatorConstants.ShooterConstants;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.utils.LimelightHelpers;
 import frc.robot.utils.TrajectoryCalculator;
 import swervelib.SwerveInputStream;
 
@@ -34,16 +34,19 @@ public class AutoAim extends Command {
   private SwerveInputStream input;
   private DoubleSupplier x;
   private DoubleSupplier y;
+  private CommandXboxController controller;
 
   private PIDController rotationPID = new PIDController(4, 1.2, 0.2);
 
   /** Creates a new AutoAim. */
-  public AutoAim(SwerveSubsystem swerveSubsystem, DoubleSupplier x, DoubleSupplier y, ShooterSubsystem shooterSubsystem, Supplier<Pose2d> targetPose) {
+  public AutoAim(SwerveSubsystem swerveSubsystem, DoubleSupplier x, DoubleSupplier y, ShooterSubsystem shooterSubsystem, Supplier<Pose2d> targetPose, CommandXboxController controller) {
     this.m_swerveSubsystem = swerveSubsystem;
     this.m_shooterSubsystem = shooterSubsystem;
     this.targetPose = targetPose.get();
     this.x = x;
     this.y = y;
+
+    this.controller = controller;
 
     this.input = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(), x, y);
 
@@ -55,6 +58,10 @@ public class AutoAim extends Command {
     if(DriverStation.getAlliance().get().equals(Alliance.Red)){
 
     }
+  }
+
+  public AutoAim(SwerveSubsystem swerveSubsystem, ShooterSubsystem shooterSubsystem, Supplier<Pose2d> targetPose){
+    this(swerveSubsystem, () -> 0, () -> 0, shooterSubsystem, targetPose, null);
   }
 
   // Called when the command is initially scheduled.
@@ -129,9 +136,22 @@ public class AutoAim extends Command {
 
     // m_shooterSubsystem.setTurretPos(0);
 
+    if(!(controller == null)){
+      if(withinRange(m_shooterSubsystem.getShooterVel(), shooterVel, 5) && withinRange(localTargetPos.getTranslation().getAngle().getRadians(), rotationPID.getSetpoint(), 0.067)){
+        controller.setRumble(RumbleType.kBothRumble, 1);
+      } else {
+        controller.setRumble(RumbleType.kBothRumble, 0);
+      }
+    }
 
   }
 
+  private boolean withinRange(double value, double targetValue, double range){
+    if(Math.abs(value-targetValue) <= range){
+      return true;
+    }
+    return false;
+  }
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {}

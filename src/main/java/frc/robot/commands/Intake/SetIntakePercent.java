@@ -5,6 +5,7 @@
 package frc.robot.commands.Intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.ManipulatorConstants.IntakeConstants;
 import frc.robot.subsystems.IntakeSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -19,6 +20,10 @@ public class SetIntakePercent extends Command {
     this.actuatorPercent = actuatorPercent;
     addRequirements(m_intakeSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
+  }
+
+  public SetIntakePercent(IntakeSubsystem intakeSubsystem){
+    this(intakeSubsystem, IntakeConstants.kIntakeSpeedPercent, IntakeConstants.kIntakeStallPercent);
   }
 
   // Called when the command is initially scheduled.
