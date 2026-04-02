@@ -6,6 +6,7 @@ package frc.robot.commands.Indexer;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.ManipulatorConstants.IndexerConstants;
 import frc.robot.subsystems.IndexerSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -20,6 +21,10 @@ public class SetIndexer extends Command {
     this.spindexerPercent = spindexerPercent;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(indexerSubsystem);
+  }
+
+  public SetIndexer(IndexerSubsystem indexerSubsystem){
+    this(indexerSubsystem, IndexerConstants.kKickerSpeed, IndexerConstants.kSpindexerSpeed);
   }
 
   // Called when the command is initially scheduled.

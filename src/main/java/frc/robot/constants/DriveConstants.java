@@ -2,4 +2,5 @@ package frc.robot.constants;
 
 public class DriveConstants {
     public static final double MAX_SPEED = 4.5;
+    public static final double AutoAimSpeedScale = 0.3;
 }

@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.constants.DriveConstants;
 import frc.robot.constants.ManipulatorConstants.ShooterConstants;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -106,7 +107,7 @@ public class AutoAim extends Command {
 
     // m_swerveSubsystem.driveFieldOriented(input.withControllerRotationAxis(() -> -rotationPID.calculate(localTargetPos.getTranslation().getAngle().getRadians())));
     
-    m_swerveSubsystem.drive(new Translation2d(-x.getAsDouble(), -y.getAsDouble()), -rotationPID.calculate(localTargetPos.getTranslation().getAngle().getRadians()), true);
+    m_swerveSubsystem.drive(new Translation2d(x.getAsDouble()*DriveConstants.AutoAimSpeedScale, y.getAsDouble()*DriveConstants.AutoAimSpeedScale), -rotationPID.calculate(localTargetPos.getTranslation().getAngle().getRadians()), true);
 
 
     double dist = localTargetPos.getTranslation().getNorm();
