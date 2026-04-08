@@ -183,12 +183,12 @@ public class SwerveSubsystem extends SubsystemBase
   {
     updateVision();
 
-    Logger.recordOutput("gyro raw", m_gyro.getYaw());
+    // Logger.recordOutput("gyro raw", m_gyro.getYaw());
 
     Logger.recordOutput("Pose",swerveDrive.getPose());
 
-    SmartDashboard.putNumber("Swerve drive current", driveMotors.get(0).getSupplyCurrent().getValueAsDouble());
-    SmartDashboard.putNumber("Swerve angle current", angleMotors.get(0).getSupplyCurrent().getValueAsDouble());
+    // SmartDashboard.putNumber("Swerve drive current", driveMotors.get(0).getSupplyCurrent().getValueAsDouble());
+    // SmartDashboard.putNumber("Swerve angle current", angleMotors.get(0).getSupplyCurrent().getValueAsDouble());
   }
 
 

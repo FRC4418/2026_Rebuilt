@@ -144,9 +144,10 @@ public class ShooterSubsystem extends SubsystemBase {
     // }
 
     SmartDashboard.putNumber("hood pos", m_hoodMotor.getEncoder().getPosition());
+    // SmartDashboard.putNumber("hood current", m_hoodMotor.getOutputCurrent());
 
-    SmartDashboard.putNumber("Shooter Vel", m_shooterMotor.getVelocity().getValueAsDouble());
+    // SmartDashboard.putNumber("Shooter Vel", m_shooterMotor.getVelocity().getValueAsDouble());
 
-    SmartDashboard.putNumber("Shooter Current", m_shooterMotor.getStatorCurrent().getValueAsDouble());
+    // SmartDashboard.putNumber("Shooter Current", m_shooterMotor.getStatorCurrent().getValueAsDouble());
   }
 }

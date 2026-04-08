@@ -163,8 +163,8 @@ public class IntakeSubsystem extends SubsystemBase {
     // if(m_limitSwitch.get()){
     //   m_actuatorMotor.setPosition(0);
     // } 
-    SmartDashboard.putNumber("Intake Pos",m_actuatorMotor.getPosition().getValueAsDouble());
+    // SmartDashboard.putNumber("Intake Pos",m_actuatorMotor.getPosition().getValueAsDouble());
 
-    SmartDashboard.putNumber("Intake current", m_intakeMotor.getSupplyCurrent().getValueAsDouble());
+    // SmartDashboard.putNumber("Intake current", m_intakeMotor.getSupplyCurrent().getValueAsDouble());
   }
 }

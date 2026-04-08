@@ -51,8 +51,8 @@ public class IndexerSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Spindexer Current", m_spindexerMotor.getSupplyCurrent().getValueAsDouble());
-    SmartDashboard.putNumber("Kicker Current", m_kickerMotor.getSupplyCurrent().getValueAsDouble());
+    // SmartDashboard.putNumber("Spindexer Current", m_spindexerMotor.getSupplyCurrent().getValueAsDouble());
+    // SmartDashboard.putNumber("Kicker Current", m_kickerMotor.getSupplyCurrent().getValueAsDouble());
     // This method will be called once per scheduler run
   }
 }

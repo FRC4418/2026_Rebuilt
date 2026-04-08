@@ -18,16 +18,16 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.ManipulatorConstants.LEDConstants;
 
 public class LEDSubsystem extends SubsystemBase {
 
   private AddressableLED m_led = new AddressableLED(0);
 
-  private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(104);
+  private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(30);
 
-  private LEDPattern red = LEDPattern.solid(new Color(0, 255, 0));
-  // private LEDPattern green = LEDPattern.solid(new Color(0, 255, 0));
-  private LEDPattern blue = LEDPattern.solid(new Color(0, 0, 255));
+  
+  
 
   private static final Distance kLedSpacing = Meters.of(1 / 120.0);
 
@@ -59,7 +59,7 @@ public class LEDSubsystem extends SubsystemBase {
     rainbow = rainbow.scrollAtAbsoluteSpeed(MetersPerSecond.of(.25), kLedSpacing);
     m_led.setLength(ledBuffer.getLength());
     // m_led2.setLength(ledBuffer.getLength());
-    setPattern(red);
+    setPattern(LEDConstants.red);
   }
 
   public void setPattern(LEDPattern pattern){
@@ -74,17 +74,20 @@ public class LEDSubsystem extends SubsystemBase {
     enabledPattern = pattern;
   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+  public void backToNormal(){
     if(DriverStation.isTeleopEnabled()){
       setPattern(enabledPattern);
     }else if(DriverStation.isAutonomousEnabled()){
-      setPattern(blue.breathe(Seconds.of(.5)));
+      setPattern(LEDConstants.blue.breathe(Seconds.of(.5)));
     }else{
       updateLEDDisabled();
-
     }
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    backToNormal();
   }
 
 

@@ -48,6 +48,7 @@ import frc.robot.constants.ManipulatorConstants.ShooterConstants;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import swervelib.SwerveInputStream;
@@ -62,6 +63,7 @@ public class RobotContainer {
   private IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
   private ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
   // private ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
+  // private LEDSubsystem m_LedSubsystem = new LEDSubsystem();
 
   private SendableChooser<Command> chooser = new SendableChooser<Command>();
 
@@ -108,6 +110,7 @@ public class RobotContainer {
     m_intakeSubsystem.setDefaultCommand(new IntakeDefault(m_intakeSubsystem));
     m_indexerSubsystem.setDefaultCommand(new IndexerDefault(m_indexerSubsystem));
     m_shooterSubsystem.setDefaultCommand(new ShooterDefault(m_shooterSubsystem));
+    // m_LedSubsystem.setDefaultCommand(new LEDSubsystem(m_LedSubsystem));
     // m_climberSubsystem.setDefaultCommand(new SetClimberPercent(m_climberSubsystem, 0));
 
   }
