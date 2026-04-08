@@ -49,7 +49,7 @@ public class AutoAim extends Command {
     this.targetPose = targetPose.get();
     this.x = x;
     this.y = y;
-    // this.LEDs = LEDs;
+    this.LEDs = LEDs;
 
     this.controller = controller;
 
