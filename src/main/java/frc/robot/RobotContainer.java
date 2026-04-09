@@ -131,12 +131,12 @@ public class RobotContainer {
     SmartDashboard.putBoolean("red", false);
     DriverStation.silenceJoystickConnectionWarning(true);
 
-    m_driverController.leftTrigger().whileTrue(new SetIntakePercent(m_intakeSubsystem));
+    m_driverController.leftTrigger().whileTrue(new SetIntakePercent(m_intakeSubsystem, 1, IntakeConstants.kIntakeStallPercent));
     // m_driverController.b().onTrue(new SetIntake(m_intakeSubsystem, 0, IntakeConstants.kIntakeDownPos));
     m_driverController.b().whileTrue(new ToggleIntake(m_intakeSubsystem));
     m_driverController.y().onTrue(new SetIntake(m_intakeSubsystem, 0, IntakeConstants.kIntakeUpPos));
 
-    m_driverController.x().whileTrue(new AutoAim(m_swerveSubsystem, () -> m_driverController.getLeftY() * -1, () -> m_driverController.getLeftX() * -1, m_shooterSubsystem, targetPose, m_driverController, m_LedSubsystem));
+    m_driverController.x().whileTrue(new AutoAim(m_swerveSubsystem, () -> m_driverController.getLeftY() * -1, () -> m_driverController.getLeftX() * -1, m_shooterSubsystem, targetPose, m_driverController));
 
     m_driverController.rightTrigger().whileTrue(new SetIndexer(m_indexerSubsystem)
       .alongWith(new JiggleIntake(m_intakeSubsystem, 1.5, .5))
@@ -148,7 +148,7 @@ public class RobotContainer {
     // m_driverController.povUp().whileTrue(new TestHood(m_shooterSubsystem, 0.3));
     // m_driverController.povDown().whileTrue(new TestHood(m_shooterSubsystem, -.3));
 
-    // m_driverController.a().onTrue(new InstantCommand(() -> m_swerveSubsystem.zeroGyro()));
+    m_driverController.a().onTrue(new InstantCommand(() -> m_swerveSubsystem.zeroGyro()));
 
     m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d())));
     m_driverController.leftBumper().onTrue(new InstantCommand( () -> m_swerveSubsystem.zeroGyro() ));

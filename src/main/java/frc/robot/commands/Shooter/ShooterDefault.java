@@ -28,7 +28,6 @@ public class ShooterDefault extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_shooterSubsystem.setTurretPos(Rotation2d.kZero);
     m_shooterSubsystem.setShooterVel(ShooterConstants.kShooterIdleSpeed);
     m_shooterSubsystem.setHoodPos(ShooterConstants.kHoodDefaultPos);
     // m_shooterSubsystem.setHoodPercentOut(0);

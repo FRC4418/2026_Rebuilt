@@ -26,7 +26,7 @@ public class LEDSubsystem extends SubsystemBase {
 
   private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(30);
 
-  private LEDPattern red = LEDPattern.solid(new Color(0, 255, 0));
+  private LEDPattern red = LEDPattern.solid(new Color(255,0, 0));
   // private LEDPattern green = LEDPattern.solid(new Color(0, 255, 0));
   private LEDPattern blue = LEDPattern.solid(new Color(0, 0, 255));
 
@@ -37,7 +37,7 @@ public class LEDSubsystem extends SubsystemBase {
   private LEDPattern enabledPattern = LEDPattern.rainbow(255, 255);
 
   
-  private LEDPattern redGrad = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, new Color(0,255,0), new Color(100,255,0)).scrollAtRelativeSpeed(Hertz.of(.5));;
+  private LEDPattern redGrad = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, new Color(255,0,0), new Color(255,100,0)).scrollAtRelativeSpeed(Hertz.of(.5));;
 
   private LEDPattern blueGrad = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, new Color(255,0,200), new Color(0,100,255)).scrollAtRelativeSpeed(Hertz.of(.5));;
 
@@ -79,7 +79,7 @@ public class LEDSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     if(DriverStation.isTeleopEnabled()){
-      setPattern(enabledPattern);
+      setPattern(red);
     }else if(DriverStation.isAutonomousEnabled()){
       setPattern(LEDConstants.blue.breathe(Seconds.of(.5)));
     }else{

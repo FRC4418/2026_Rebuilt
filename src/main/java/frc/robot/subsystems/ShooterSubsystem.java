@@ -38,7 +38,7 @@ public class ShooterSubsystem extends SubsystemBase {
   
   private final TalonFX m_shooterMotor = new TalonFX(MotorConstants.Shooter.kShooterMotorID);
   private final TalonFX m_shooterMotorSlave = new TalonFX(MotorConstants.Shooter.kShooterSlaveID);
-  private final TalonFX m_turretMotor = new TalonFX(MotorConstants.Shooter.kTurretMotorID);
+  // private final TalonFX m_turretMotor = new TalonFX(MotorConstants.Shooter.kTurretMotorID);
 
   private final SparkMax m_hoodMotor = new SparkMax(MotorConstants.Shooter.kHoodMotorID, SparkLowLevel.MotorType.kBrushless);
 
@@ -59,7 +59,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     m_shooterMotor.getConfigurator().apply(MotorConstants.Shooter.shooterConfig);
     m_shooterMotorSlave.setControl(new Follower(MotorConstants.Shooter.kShooterMotorID, MotorAlignmentValue.Opposed));
-    m_turretMotor.getConfigurator().apply(MotorConstants.Shooter.turretConfig);
+    // m_turretMotor.getConfigurator().apply(MotorConstants.Shooter.turretConfig);
     // MotorOutputConfigs config = new MotorOutputConfigs().
 
     m_hoodMotor.configure(
@@ -109,18 +109,18 @@ public class ShooterSubsystem extends SubsystemBase {
     setHoodPos(rotations*ShooterConstants.hoodRatio);
   }
 
-  public void setTurretPos(Rotation2d pos){
-    double clamped = Math.min(Math.max(pos.getDegrees(), ShooterConstants.minTurretDegrees), ShooterConstants.maxTurretDegrees);
-    m_turretMotor.setControl(m_turretRequest.withPosition(clamped * (ShooterConstants.turretRatio/360)));
-  }
+  // public void setTurretPos(Rotation2d pos){
+  //   double clamped = Math.min(Math.max(pos.getDegrees(), ShooterConstants.minTurretDegrees), ShooterConstants.maxTurretDegrees);
+  //   m_turretMotor.setControl(m_turretRequest.withPosition(clamped * (ShooterConstants.turretRatio/360)));
+  // }
 
-  public Rotation2d getTurretPos(){
-    double turretMotorRot = m_turretMotor.getPosition().getValueAsDouble();
+  // public Rotation2d getTurretPos(){
+  //   // double turretMotorRot = m_turretMotor.getPosition().getValueAsDouble();
 
-    double turretRotations = turretMotorRot / ShooterConstants.turretRatio;
+  //   double turretRotations = turretMotorRot / ShooterConstants.turretRatio;
 
-    return Rotation2d.fromRotations(turretRotations);
-  }
+  //   return Rotation2d.fromRotations(turretRotations);
+  // }
 
   @Override
   public void periodic() {

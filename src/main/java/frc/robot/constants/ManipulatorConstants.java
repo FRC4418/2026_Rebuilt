@@ -60,7 +60,7 @@ public class ManipulatorConstants {
     }
 
     public static class IndexerConstants{
-        public static final double kKickerSpeed = 1;
+        public static final double kKickerSpeed = .7;
         public static final double kSpindexerSpeed = -.4;
     }
 

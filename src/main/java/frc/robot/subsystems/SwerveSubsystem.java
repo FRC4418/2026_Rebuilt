@@ -183,7 +183,7 @@ public class SwerveSubsystem extends SubsystemBase
   {
     updateVision();
 
-    // Logger.recordOutput("gyro raw", m_gyro.getYaw());
+    Logger.recordOutput("gyro raw", m_gyro.getYaw());
 
     Logger.recordOutput("Pose",swerveDrive.getPose());
 
