@@ -50,7 +50,9 @@ import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import swervelib.SwerveInputStream;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -62,6 +64,7 @@ public class RobotContainer {
   private IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
   private ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
   // private ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
+  private LEDSubsystem m_LedSubsystem = new LEDSubsystem();
 
   private SendableChooser<Command> chooser = new SendableChooser<Command>();
 
@@ -130,7 +133,7 @@ public class RobotContainer {
     m_driverController.b().whileTrue(new ToggleIntake(m_intakeSubsystem));
     m_driverController.y().onTrue(new SetIntake(m_intakeSubsystem, 0, IntakeConstants.kIntakeUpPos));
 
-    m_driverController.x().whileTrue(new AutoAim(m_swerveSubsystem, () -> m_driverController.getLeftY() * -1, () -> m_driverController.getLeftX() * -1, m_shooterSubsystem, targetPose, m_driverController));
+    m_driverController.x().whileTrue(new AutoAim(m_swerveSubsystem, () -> m_driverController.getLeftY() * -1, () -> m_driverController.getLeftX() * -1, m_shooterSubsystem, targetPose, m_driverController, m_LedSubsystem));
 
     m_driverController.rightTrigger().whileTrue(new SetIndexer(m_indexerSubsystem)
       .alongWith(new JiggleIntake(m_intakeSubsystem, 1.5, .5))
@@ -147,7 +150,7 @@ public class RobotContainer {
     m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d())));
     m_driverController.leftBumper().onTrue(new InstantCommand( () -> m_swerveSubsystem.zeroGyro() ));
 
-    SmartDashboard.putData("Zero Gyro", new InstantCommand( () -> m_swerveSubsystem.zeroGyro() ));
+    // SmartDashboard.putData("Zero Gyro", new InstantCommand( () -> m_swerveSubsystem.zeroGyro() ));
   }
 
 

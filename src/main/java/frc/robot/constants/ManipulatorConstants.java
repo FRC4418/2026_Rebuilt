@@ -1,11 +1,17 @@
 package frc.robot.constants;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import static edu.wpi.first.units.Units.Hertz;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Seconds;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.util.Color;
+
 
 public class ManipulatorConstants {
     public static class ShooterConstants{
@@ -54,8 +60,22 @@ public class ManipulatorConstants {
     }
 
     public static class IndexerConstants{
-        public static final double kKickerSpeed = -1;
+        public static final double kKickerSpeed = 1;
         public static final double kSpindexerSpeed = -.4;
+    }
+
+    public static class LEDConstants{
+        public static final LEDPattern red = LEDPattern.solid(new Color(0, 255, 0));
+        public static final LEDPattern green = LEDPattern.solid(new Color(0, 255,0));
+        public static final LEDPattern blue = LEDPattern.solid(new Color(0, 0, 255));
+
+        public static final Distance kLedSpacing = Meters.of(1/120.0);
+
+        public static final LEDPattern rainbow = LEDPattern.rainbow(255,255);
+        public static final LEDPattern enabledPattern = LEDPattern.rainbow(255,255);
+        public static final LEDPattern redGrad = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, new Color(0,255,0), new Color(100,255,0)).scrollAtRelativeSpeed(Hertz.of(.5));
+        public static final LEDPattern blueGrad = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, new Color(255,0,200), new Color(0,100,255)).scrollAtRelativeSpeed(Hertz.of(.5));
+        public static final LEDPattern fancy = blueGrad.breathe(Seconds.of(5));
     }
     
 }

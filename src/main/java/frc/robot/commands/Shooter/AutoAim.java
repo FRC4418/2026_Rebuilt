@@ -21,11 +21,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.constants.DriveConstants;
+import frc.robot.constants.ManipulatorConstants.LEDConstants;
 import frc.robot.constants.ManipulatorConstants.ShooterConstants;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.utils.TrajectoryCalculator;
 import swervelib.SwerveInputStream;
+
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class AutoAim extends Command {
@@ -36,23 +39,25 @@ public class AutoAim extends Command {
   private DoubleSupplier x;
   private DoubleSupplier y;
   private CommandXboxController controller;
+  private LEDSubsystem LEDs;
 
   private PIDController rotationPID = new PIDController(4, 1.2, 0.2);
 
   /** Creates a new AutoAim. */
-  public AutoAim(SwerveSubsystem swerveSubsystem, DoubleSupplier x, DoubleSupplier y, ShooterSubsystem shooterSubsystem, Supplier<Pose2d> targetPose, CommandXboxController controller) {
+  public AutoAim(SwerveSubsystem swerveSubsystem, DoubleSupplier x, DoubleSupplier y, ShooterSubsystem shooterSubsystem, Supplier<Pose2d> targetPose, CommandXboxController controller, LEDSubsystem LEDs) {
     this.m_swerveSubsystem = swerveSubsystem;
     this.m_shooterSubsystem = shooterSubsystem;
     this.targetPose = targetPose.get();
     this.x = x;
     this.y = y;
+    this.LEDs = LEDs;
 
     this.controller = controller;
 
     this.input = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(), x, y);
 
     
-    addRequirements(swerveSubsystem, shooterSubsystem);
+    addRequirements(swerveSubsystem, shooterSubsystem, LEDs);
     // Use addRequirements() here to declare subsystem dependencies.
     if(DriverStation.getAlliance().isEmpty()) return;
 
@@ -62,7 +67,7 @@ public class AutoAim extends Command {
   }
 
   public AutoAim(SwerveSubsystem swerveSubsystem, ShooterSubsystem shooterSubsystem, Supplier<Pose2d> targetPose){
-    this(swerveSubsystem, () -> 0, () -> 0, shooterSubsystem, targetPose, null);
+    this(swerveSubsystem, () -> 0, () -> 0, shooterSubsystem, targetPose, null, null);
   }
 
   // Called when the command is initially scheduled.
@@ -140,8 +145,10 @@ public class AutoAim extends Command {
     if(!(controller == null)){
       if(withinRange(m_shooterSubsystem.getShooterVel(), shooterVel, 5) && withinRange(localTargetPos.getTranslation().getAngle().getRadians(), rotationPID.getSetpoint(), 0.067)){
         controller.setRumble(RumbleType.kBothRumble, 1);
+        LEDs.setPattern(LEDConstants.green);
       } else {
         controller.setRumble(RumbleType.kBothRumble, 0);
+        LEDs.setPattern(LEDConstants.red);
       }
     }
 
@@ -155,7 +162,9 @@ public class AutoAim extends Command {
   }
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    LEDs.setEnabledPattern(LEDConstants.enabledPattern);
+  }
 
   // Returns true when the command should end.
   @Override
