@@ -53,11 +53,11 @@ public class JiggleIntake extends Command {
 
 
 
-    if(m_intakeSubsystem.getIntakePos() > 3.5){
-      m_intakeSubsystem.setActuatorPercent(-.3);
-    }else{
-      m_intakeSubsystem.setActuatorPercent(.3);
-    }
+    // if(m_intakeSubsystem.getIntakePos() > 3.5){
+    //   m_intakeSubsystem.setActuatorPercent(-.3);
+    // }else{
+    //   m_intakeSubsystem.setActuatorPercent(.3);
+    // }
 
     
   }
