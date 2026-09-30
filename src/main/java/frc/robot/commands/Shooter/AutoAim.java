@@ -112,7 +112,7 @@ public class AutoAim extends Command {
 
     // m_swerveSubsystem.driveFieldOriented(input.withControllerRotationAxis(() -> -rotationPID.calculate(localTargetPos.getTranslation().getAngle().getRadians())));
     
-    m_swerveSubsystem.drive(new Translation2d(x.getAsDouble()*DriveConstants.AutoAimSpeedScale, y.getAsDouble()*DriveConstants.AutoAimSpeedScale), -rotationPID.calculate(localTargetPos.getTranslation().getAngle().getRadians()), true);
+    m_swerveSubsystem.drive(new Translation2d(x.getAsDouble()*DriveConstants.AutoAimSpeedScale, y.getAsDouble()*DriveConstants.AutoAimSpeedScale), rotationPID.calculate(localTargetPos.getTranslation().getAngle().getRadians()), true);
 
 
     double dist = localTargetPos.getTranslation().getNorm();
