@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -35,6 +36,7 @@ public class AutoAim extends Command {
   private SwerveSubsystem m_swerveSubsystem;
   private ShooterSubsystem m_shooterSubsystem;
   private Pose2d targetPose;
+  private Supplier<Pose2d> targetPoseSupplier;
   private SwerveInputStream input;
   private DoubleSupplier x;
   private DoubleSupplier y;
@@ -47,7 +49,7 @@ public class AutoAim extends Command {
   public AutoAim(SwerveSubsystem swerveSubsystem, DoubleSupplier x, DoubleSupplier y, ShooterSubsystem shooterSubsystem, Supplier<Pose2d> targetPose, CommandXboxController controller) {
     this.m_swerveSubsystem = swerveSubsystem;
     this.m_shooterSubsystem = shooterSubsystem;
-    this.targetPose = targetPose.get();
+    this.targetPoseSupplier = targetPose;
     this.x = x;
     this.y = y;
     // this.LEDs = LEDs;
@@ -59,11 +61,7 @@ public class AutoAim extends Command {
     
     addRequirements(swerveSubsystem, shooterSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
-    if(DriverStation.getAlliance().isEmpty()) return;
-
-    if(DriverStation.getAlliance().get().equals(Alliance.Red)){
-
-    }
+    rotationPID.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   public AutoAim(SwerveSubsystem swerveSubsystem, ShooterSubsystem shooterSubsystem, Supplier<Pose2d> targetPose){
@@ -73,6 +71,8 @@ public class AutoAim extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    targetPose = targetPoseSupplier.get();
+    rotationPID.reset();
     rotationPID.setSetpoint(SmartDashboard.getNumber("shooting angle offset", 0));
 
     // targetPose = (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) ? new Pose2d(ShooterConstants.redHub, Rotation2d.k180deg) : new Pose2d(ShooterConstants.blueHub, Rotation2d.kZero);
@@ -112,7 +112,14 @@ public class AutoAim extends Command {
 
     // m_swerveSubsystem.driveFieldOriented(input.withControllerRotationAxis(() -> -rotationPID.calculate(localTargetPos.getTranslation().getAngle().getRadians())));
     
-    m_swerveSubsystem.drive(new Translation2d(x.getAsDouble()*DriveConstants.AutoAimSpeedScale, y.getAsDouble()*DriveConstants.AutoAimSpeedScale), rotationPID.calculate(localTargetPos.getTranslation().getAngle().getRadians()), true);
+    // Match normal driving's alliance-relative translation and joystick deadband.
+    double allianceSign = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? -1 : 1;
+    Translation2d translation = new Translation2d(
+        MathUtil.applyDeadband(x.getAsDouble(), 0.1),
+        MathUtil.applyDeadband(y.getAsDouble(), 0.1))
+        .times(allianceSign * DriveConstants.AutoAimSpeedScale);
+    // A positive target bearing needs CCW rotation; PID returns setpoint - bearing.
+    m_swerveSubsystem.drive(translation, -rotationPID.calculate(localTargetPos.getTranslation().getAngle().getRadians()), true);
 
 
     double dist = localTargetPos.getTranslation().getNorm();
