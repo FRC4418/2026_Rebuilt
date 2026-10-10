@@ -75,7 +75,7 @@ public class AutoAim extends Command {
   public void initialize() {
     rotationPID.setSetpoint(SmartDashboard.getNumber("shooting angle offset", 0));
 
-    targetPose = (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) ? new Pose2d(ShooterConstants.redHub, Rotation2d.k180deg) : new Pose2d(ShooterConstants.blueHub, Rotation2d.kZero);
+    // targetPose = (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) ? new Pose2d(ShooterConstants.redHub, Rotation2d.k180deg) : new Pose2d(ShooterConstants.blueHub, Rotation2d.kZero);
 
   }
 
@@ -86,8 +86,8 @@ public class AutoAim extends Command {
 
 
     
-    
-    Pose2d globalTurretPose = m_swerveSubsystem.getPose().transformBy(new Transform2d(ShooterConstants.turretPose.toTranslation2d(), Rotation2d.k180deg));
+    Pose2d globalTurretPose = m_swerveSubsystem.getPose();
+    //Pose2d globalTurretPose = m_swerveSubsystem.getPose().transformBy(new Transform2d(ShooterConstants.turretPose.toTranslation2d(), Rotation2d.k180deg));
     // Transform2d localTagPose = targetPose.minus(globalRobotPose);
     // Pose2d globalRobotPose = m_shooterSubsystem.turretCamera.getLLHPose(m_swerveSubsystem.getYaw(), m_swerveSubsystem.getYawRate()).pose;
     

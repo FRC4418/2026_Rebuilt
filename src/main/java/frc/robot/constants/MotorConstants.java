@@ -17,7 +17,7 @@ public class MotorConstants {
                 .withKS(0)
                 .withKV(0)
                 .withKA(0)
-                .withKP(.5)
+                .withKP(0.65)
                 .withKI(0.05)
                 .withKD(0);
 

@@ -166,6 +166,7 @@ public class RobotContainer {
     chooser.addOption("big one", middleRush());
     chooser.addOption("left mid rush", oneSideBumpLeft());
     chooser.addOption("right mid rush", oneSideBumpRight());
+    chooser.addOption("move n shoot", moveShoot());
 
     SmartDashboard.putData("Auto Selector", chooser);
   }
@@ -193,6 +194,22 @@ public class RobotContainer {
     Command shoot = new SetShooter(m_shooterSubsystem, 4.2, .65).alongWith(new SetIndexer(m_indexerSubsystem, -1,-1));
 
     return warmupShooter.andThen(shoot);
+  }
+
+  public Command moveShoot(){
+    PathPlannerPath path = getPath("New Path");
+
+    Command drivePath = AutoBuilder.followPath(path);
+
+    Command resetPose = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(path.getStartingHolonomicPose().get()));
+    
+    Command aim = new AutoAim(m_swerveSubsystem, m_shooterSubsystem, targetPose);
+
+    Command shoot = new SetIndexer(m_indexerSubsystem);
+
+    Command wholeThing = new ParallelCommandGroup(aim, new WaitCommand(1.5).andThen(shoot));
+
+    return new SequentialCommandGroup(resetPose, drivePath, wholeThing);
   }
 
   public Command depotOneCycle(){
