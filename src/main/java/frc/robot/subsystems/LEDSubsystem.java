@@ -63,7 +63,8 @@ public class LEDSubsystem extends SubsystemBase {
     for (int i = 0; i < ledList.length; i++) {
       ledList[i] = 0;
     }
-    rainbow = rainbow.scrollAtAbsoluteSpeed(MetersPerSecond.of(.25), kLedSpacing);
+    rainbow = rainbow.scrollAtRelativeSpeed(Hertz.of(0.25))
+        .breathe(Seconds.of(4));
     m_led.setLength(ledBuffer.getLength());
     // m_led2.setLength(ledBuffer.getLength());
     // setPattern(LEDConstants.red);
@@ -84,8 +85,11 @@ public class LEDSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    setPattern(DriverStation.isEnabled() && readyToShoot
-        ? LEDConstants.green : LEDConstants.red);
+    if (DriverStation.isDisabled()) {
+      setPattern(rainbow);
+    } else {
+      setPattern(readyToShoot ? LEDConstants.green : LEDConstants.red);
+    }
   }
 
 
