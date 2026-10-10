@@ -158,7 +158,7 @@ public class SwerveSubsystem extends SubsystemBase
       camera.setIMUMode(0);
     }
 
-    swerveDrive.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,.5));;
+    swerveDrive.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
 
     
   }
@@ -234,12 +234,18 @@ public class SwerveSubsystem extends SubsystemBase
 
     if(bestEst == null) return;
 
-    //if our mt1 is accurate and saying were at a different yaw, then use mt1 to chage the robot yaw
-    if(bestTotalArea > .5 && bestMT1.tagCount > 1 && Math.abs(yaw - bestMT1.pose.getRotation().getDegrees()) > 5){
+    // Compare headings across the +/-180 degree boundary using the shortest difference.
+    double headingError = Math.abs(Rotation2d.fromDegrees(yaw)
+        .minus(bestMT1.pose.getRotation()).getDegrees());
+    if(bestTotalArea > .5 && bestMT1.tagCount > 1 && headingError > 5){
+      // MegaTag1 estimates heading independently, so retain its heading correction.
+      swerveDrive.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,.5));
       swerveDrive.addVisionMeasurement(bestMT1.pose, bestMT1.timestampSeconds);
       return;
     }
 
+    // MegaTag2 uses our supplied heading; only trust it to correct translation.
+    swerveDrive.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
     swerveDrive.addVisionMeasurement(bestEst.pose, bestEst.timestampSeconds);
   }
 

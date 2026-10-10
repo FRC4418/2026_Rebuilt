@@ -67,7 +67,7 @@ public class RobotContainer {
   // private ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
   private LEDSubsystem m_LedSubsystem = new LEDSubsystem();
 
-  private SendableChooser<Command> chooser = new SendableChooser<Command>();
+  private SendableChooser<Supplier<Command>> chooser = new SendableChooser<Supplier<Command>>();
 
   private final CommandXboxController m_driverController = new CommandXboxController(0);
 
@@ -158,15 +158,16 @@ public class RobotContainer {
 
 
   public void addAutoOptions(){ 
-    chooser.setDefaultOption("Nothing", new InstantCommand());
-    chooser.addOption("New Path", getTestCommand());
-    chooser.addOption("basic auto", basicShoot());
-    chooser.addOption("depot one", depotOneCycle());
-    chooser.addOption("depot angled", depotAngled());
-    chooser.addOption("big one", middleRush());
-    chooser.addOption("left mid rush", oneSideBumpLeft());
-    chooser.addOption("right mid rush", oneSideBumpRight());
-    chooser.addOption("move n shoot", moveShoot());
+    // Build the selected auto at autonomous start, when the alliance is known.
+    chooser.setDefaultOption("Nothing", () -> new InstantCommand());
+    chooser.addOption("New Path", this::getTestCommand);
+    chooser.addOption("basic auto", this::basicShoot);
+    chooser.addOption("depot one", this::depotOneCycle);
+    chooser.addOption("depot angled", this::depotAngled);
+    chooser.addOption("big one", this::middleRush);
+    chooser.addOption("left mid rush", this::oneSideBumpLeft);
+    chooser.addOption("right mid rush", this::oneSideBumpRight);
+    chooser.addOption("move n shoot", this::moveShoot);
 
     SmartDashboard.putData("Auto Selector", chooser);
   }
@@ -332,6 +333,6 @@ public class RobotContainer {
     
 
     // An example command will be run in autonomous
-    return chooser.getSelected();
+    return chooser.getSelected().get();
   }
 }
