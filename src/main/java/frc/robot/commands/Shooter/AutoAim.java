@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,7 +44,9 @@ public class AutoAim extends Command {
   private CommandXboxController controller;
   private LEDSubsystem LEDs;
 
-  private PIDController rotationPID = new PIDController(1, 0, 0);
+  private PIDController rotationPID = new PIDController(4, 0, 0);
+  private boolean readyToShoot = false;
+  private double readySince = Double.NaN;
 
   /** Creates a new AutoAim. */
   public AutoAim(SwerveSubsystem swerveSubsystem, DoubleSupplier x, DoubleSupplier y, ShooterSubsystem shooterSubsystem, Supplier<Pose2d> targetPose, CommandXboxController controller, LEDSubsystem LEDs) {
@@ -71,7 +74,14 @@ public class AutoAim extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    readyToShoot = false;
+    readySince = Double.NaN;
     LEDs.setReadyToShoot(false);
+    Logger.recordOutput("Shooting/Aligned", false);
+    Logger.recordOutput("Shooting/Speed Ready", false);
+    Logger.recordOutput("Shooting/Hood Ready", false);
+    Logger.recordOutput("Shooting/Speed Error", Double.NaN);
+    Logger.recordOutput("Shooting/Hood Error", Double.NaN);
     targetPose = targetPoseSupplier.get();
     rotationPID.reset();
 
@@ -99,6 +109,8 @@ public class AutoAim extends Command {
     // Pose2d globalRobotPose = globalRobotEstimate.pose;
 
     if(globalTurretPose == null){
+      readyToShoot = false;
+      readySince = Double.NaN;
       LEDs.setReadyToShoot(false);
       return;
     }
@@ -125,6 +137,13 @@ public class AutoAim extends Command {
     boolean blocked = !Double.isFinite(headingError) || Math.abs(headingError) > Math.PI / 2;
     Logger.recordOutput("Shooting/Aim Blocked", blocked);
     if (blocked) {
+      readyToShoot = false;
+      readySince = Double.NaN;
+      Logger.recordOutput("Shooting/Aligned", false);
+      Logger.recordOutput("Shooting/Speed Ready", false);
+      Logger.recordOutput("Shooting/Hood Ready", false);
+      Logger.recordOutput("Shooting/Speed Error", Double.NaN);
+      Logger.recordOutput("Shooting/Hood Error", Double.NaN);
       m_swerveSubsystem.drive(new Translation2d(), 0, true);
       m_shooterSubsystem.setShooterVel(0);
       LEDs.setReadyToShoot(false);
@@ -137,7 +156,7 @@ public class AutoAim extends Command {
       return;
     }
     double rotation = MathUtil.clamp(rotationPID.calculate(
-        shooterHeading, desiredHeading), -0.3, 0.3);
+        shooterHeading, desiredHeading), -1.0, 1.0);
     Logger.recordOutput("Shooting/Desired Heading", desiredHeading);
     Logger.recordOutput("Shooting/Heading Error", rotationPID.getPositionError());
     Logger.recordOutput("Shooting/Commanded Rotation", rotation);
@@ -178,17 +197,24 @@ public class AutoAim extends Command {
 
     double speedError = m_shooterSubsystem.getShooterVel() - speedTarget;
     double hoodError = m_shooterSubsystem.getHoodPos() - hoodTarget;
-    boolean aligned = Math.abs(rotationPID.getPositionError()) <= 0.067;
-    boolean speedReady = speedTarget > 0 && Math.abs(speedError) <= 5;
-    boolean hoodReady = Math.abs(hoodError) <= 0.2;
-    boolean ready = aligned && speedReady && hoodReady;
+    // Enter green at the original tolerances; leave at slightly wider tolerances.
+    boolean aligned = Math.abs(rotationPID.getPositionError()) <= (readyToShoot ? 0.085 : 0.067);
+    boolean speedReady = speedTarget > 0 && Math.abs(speedError) <= (readyToShoot ? 7 : 5);
+    boolean hoodReady = Math.abs(hoodError) <= (readyToShoot ? 0.3 : 0.2);
+    if (aligned && speedReady && hoodReady) {
+      if (Double.isNaN(readySince)) readySince = Timer.getFPGATimestamp();
+      if (Timer.getFPGATimestamp() - readySince >= 0.15) readyToShoot = true;
+    } else {
+      readyToShoot = false;
+      readySince = Double.NaN;
+    }
     Logger.recordOutput("Shooting/Aligned", aligned);
     Logger.recordOutput("Shooting/Speed Ready", speedReady);
     Logger.recordOutput("Shooting/Hood Ready", hoodReady);
     Logger.recordOutput("Shooting/Speed Error", speedError);
     Logger.recordOutput("Shooting/Hood Error", hoodError);
-    LEDs.setReadyToShoot(ready);
-    Logger.recordOutput("Shooting/Ready", ready);
+    LEDs.setReadyToShoot(readyToShoot);
+    Logger.recordOutput("Shooting/Ready", readyToShoot);
 
     Logger.recordOutput("target shooter pos", shooterPos);
     Logger.recordOutput("target shooter vel", shooterVel);
@@ -208,6 +234,8 @@ public class AutoAim extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    readyToShoot = false;
+    readySince = Double.NaN;
     m_swerveSubsystem.drive(new Translation2d(), 0, true);
     Logger.recordOutput("Shooting/Commanded Rotation", 0.0);
     LEDs.setReadyToShoot(false);
