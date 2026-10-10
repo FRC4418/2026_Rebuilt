@@ -43,7 +43,7 @@ public class AutoAim extends Command {
   private CommandXboxController controller;
   private LEDSubsystem LEDs;
 
-  private PIDController rotationPID = new PIDController(4, 1.2, 0.2);
+  private PIDController rotationPID = new PIDController(4, 0, 0);
 
   /** Creates a new AutoAim. */
   public AutoAim(SwerveSubsystem swerveSubsystem, DoubleSupplier x, DoubleSupplier y, ShooterSubsystem shooterSubsystem, Supplier<Pose2d> targetPose, CommandXboxController controller, LEDSubsystem LEDs) {
@@ -115,10 +115,11 @@ public class AutoAim extends Command {
         .minus(globalTurretPose.getTranslation()).getAngle().getRadians();
     double desiredHeading = MathUtil.angleModulus(
         bearing - SmartDashboard.getNumber("shooting angle offset", 0));
-    double rotation = rotationPID.calculate(
-        globalTurretPose.getRotation().getRadians(), desiredHeading);
+    double rotation = MathUtil.clamp(rotationPID.calculate(
+        globalTurretPose.getRotation().getRadians(), desiredHeading), -1.0, 1.0);
     Logger.recordOutput("Shooting/Desired Heading", desiredHeading);
     Logger.recordOutput("Shooting/Heading Error", rotationPID.getPositionError());
+    Logger.recordOutput("Shooting/Commanded Rotation", rotation);
     
     // Match normal driving's alliance-relative translation and joystick deadband.
     double allianceSign = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? -1 : 1;
@@ -179,6 +180,8 @@ public class AutoAim extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_swerveSubsystem.drive(new Translation2d(), 0, true);
+    Logger.recordOutput("Shooting/Commanded Rotation", 0.0);
     LEDs.setReadyToShoot(false);
     Logger.recordOutput("Shooting/Ready", false);
   }
