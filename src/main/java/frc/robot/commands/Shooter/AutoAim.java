@@ -176,10 +176,17 @@ public class AutoAim extends Command {
     m_shooterSubsystem.setHoodPos(hoodTarget);
     m_shooterSubsystem.setShooterVel(speedTarget);
 
-    boolean ready = speedTarget > 0
-        && Math.abs(rotationPID.getPositionError()) <= 0.067
-        && withinRange(m_shooterSubsystem.getShooterVel(), speedTarget, 5)
-        && withinRange(m_shooterSubsystem.getHoodPos(), hoodTarget, 0.2);
+    double speedError = m_shooterSubsystem.getShooterVel() - speedTarget;
+    double hoodError = m_shooterSubsystem.getHoodPos() - hoodTarget;
+    boolean aligned = Math.abs(rotationPID.getPositionError()) <= 0.067;
+    boolean speedReady = speedTarget > 0 && Math.abs(speedError) <= 5;
+    boolean hoodReady = Math.abs(hoodError) <= 0.2;
+    boolean ready = aligned && speedReady && hoodReady;
+    Logger.recordOutput("Shooting/Aligned", aligned);
+    Logger.recordOutput("Shooting/Speed Ready", speedReady);
+    Logger.recordOutput("Shooting/Hood Ready", hoodReady);
+    Logger.recordOutput("Shooting/Speed Error", speedError);
+    Logger.recordOutput("Shooting/Hood Error", hoodError);
     LEDs.setReadyToShoot(ready);
     Logger.recordOutput("Shooting/Ready", ready);
 
