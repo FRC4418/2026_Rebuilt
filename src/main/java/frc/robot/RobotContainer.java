@@ -136,7 +136,7 @@ public class RobotContainer {
     m_driverController.b().whileTrue(new ToggleIntake(m_intakeSubsystem));
     m_driverController.y().onTrue(new SetIntake(m_intakeSubsystem, 0, IntakeConstants.kIntakeUpPos));
 
-    m_driverController.x().whileTrue(new AutoAim(m_swerveSubsystem, () -> m_driverController.getLeftY() * -1, () -> m_driverController.getLeftX() * -1, m_shooterSubsystem, targetPose, m_driverController));
+    m_driverController.x().whileTrue(new AutoAim(m_swerveSubsystem, () -> m_driverController.getLeftY() * -1, () -> m_driverController.getLeftX() * -1, m_shooterSubsystem, targetPose, m_driverController, m_LedSubsystem));
 
     m_driverController.rightTrigger().whileTrue(new SetIndexer(m_indexerSubsystem)
       .alongWith(new JiggleIntake(m_intakeSubsystem, 1.5, .5))
@@ -204,7 +204,7 @@ public class RobotContainer {
 
     Command resetPose = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(path.getStartingHolonomicPose().get()));
     
-    Command aim = new AutoAim(m_swerveSubsystem, m_shooterSubsystem, targetPose);
+    Command aim = new AutoAim(m_swerveSubsystem, m_shooterSubsystem, targetPose, m_LedSubsystem);
 
     Command shoot = new SetIndexer(m_indexerSubsystem);
 
@@ -226,7 +226,7 @@ public class RobotContainer {
   
     Command toShoot = AutoBuilder.followPath(getPath("depot to shoot"));
 
-    Command aim = new AutoAim(m_swerveSubsystem, m_shooterSubsystem, targetPose);
+    Command aim = new AutoAim(m_swerveSubsystem, m_shooterSubsystem, targetPose, m_LedSubsystem);
 
     Command shoot = new SetIndexer(m_indexerSubsystem);
 
@@ -246,7 +246,7 @@ public class RobotContainer {
                             .raceWith(new WaitCommand(1))
                             .andThen(new SetIntakePercent(m_intakeSubsystem));
 
-    Command aim = new AutoAim(m_swerveSubsystem, m_shooterSubsystem, targetPose);
+    Command aim = new AutoAim(m_swerveSubsystem, m_shooterSubsystem, targetPose, m_LedSubsystem);
 
     Command shoot = new SetIndexer(m_indexerSubsystem);
 
@@ -266,7 +266,7 @@ public class RobotContainer {
 
     Command intakeAround = AutoBuilder.followPath(firstPath).raceWith(new WaitCommand(0.8).andThen(intake));
 
-    Command aim = new AutoAim(m_swerveSubsystem, m_shooterSubsystem, targetPose);
+    Command aim = new AutoAim(m_swerveSubsystem, m_shooterSubsystem, targetPose, m_LedSubsystem);
 
     Command shoot = new SetIndexer(m_indexerSubsystem);
 
@@ -285,7 +285,7 @@ public class RobotContainer {
 
     Command intakeAround = AutoBuilder.followPath(firstPath).raceWith(new WaitCommand(0.8).andThen(intake));
 
-    Command aim = new AutoAim(m_swerveSubsystem, m_shooterSubsystem, targetPose);
+    Command aim = new AutoAim(m_swerveSubsystem, m_shooterSubsystem, targetPose, m_LedSubsystem);
 
     Command shoot = new SetIndexer(m_indexerSubsystem);
 
@@ -304,7 +304,7 @@ public class RobotContainer {
 
     Command intakeAround = AutoBuilder.followPath(firstPath).raceWith(new WaitCommand(0.8).andThen(intake));
 
-    Command aim = new AutoAim(m_swerveSubsystem, m_shooterSubsystem, targetPose);
+    Command aim = new AutoAim(m_swerveSubsystem, m_shooterSubsystem, targetPose, m_LedSubsystem);
 
     Command shoot = new SetIndexer(m_indexerSubsystem);
 

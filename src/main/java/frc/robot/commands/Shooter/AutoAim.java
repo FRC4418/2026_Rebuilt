@@ -41,36 +41,37 @@ public class AutoAim extends Command {
   private DoubleSupplier x;
   private DoubleSupplier y;
   private CommandXboxController controller;
-  // private LEDSubsystem LEDs;
+  private LEDSubsystem LEDs;
 
   private PIDController rotationPID = new PIDController(4, 1.2, 0.2);
 
   /** Creates a new AutoAim. */
-  public AutoAim(SwerveSubsystem swerveSubsystem, DoubleSupplier x, DoubleSupplier y, ShooterSubsystem shooterSubsystem, Supplier<Pose2d> targetPose, CommandXboxController controller) {
+  public AutoAim(SwerveSubsystem swerveSubsystem, DoubleSupplier x, DoubleSupplier y, ShooterSubsystem shooterSubsystem, Supplier<Pose2d> targetPose, CommandXboxController controller, LEDSubsystem LEDs) {
     this.m_swerveSubsystem = swerveSubsystem;
     this.m_shooterSubsystem = shooterSubsystem;
     this.targetPoseSupplier = targetPose;
     this.x = x;
     this.y = y;
-    // this.LEDs = LEDs;
+    this.LEDs = LEDs;
 
     this.controller = controller;
 
     this.input = SwerveInputStream.of(m_swerveSubsystem.getSwerveDrive(), x, y);
 
     
-    addRequirements(swerveSubsystem, shooterSubsystem);
+    addRequirements(swerveSubsystem, shooterSubsystem, LEDs);
     // Use addRequirements() here to declare subsystem dependencies.
     rotationPID.enableContinuousInput(-Math.PI, Math.PI);
   }
 
-  public AutoAim(SwerveSubsystem swerveSubsystem, ShooterSubsystem shooterSubsystem, Supplier<Pose2d> targetPose){
-    this(swerveSubsystem, () -> 0, () -> 0, shooterSubsystem, targetPose, null);
+  public AutoAim(SwerveSubsystem swerveSubsystem, ShooterSubsystem shooterSubsystem, Supplier<Pose2d> targetPose, LEDSubsystem LEDs){
+    this(swerveSubsystem, () -> 0, () -> 0, shooterSubsystem, targetPose, null, LEDs);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    LEDs.setReadyToShoot(false);
     targetPose = targetPoseSupplier.get();
     rotationPID.reset();
     rotationPID.setSetpoint(SmartDashboard.getNumber("shooting angle offset", 0));
@@ -99,6 +100,7 @@ public class AutoAim extends Command {
     // Pose2d globalRobotPose = globalRobotEstimate.pose;
 
     if(globalTurretPose == null){
+      LEDs.setReadyToShoot(false);
       return;
     }
 
@@ -141,23 +143,24 @@ public class AutoAim extends Command {
 
     //m_shooterSubsystem.setHoodPos(SmartDashboard.getNumber("Shooter Pos Auto", 0));
     //m_shooterSubsystem.setShooterVel(SmartDashboard.getNumber("Shooter Vel Auto", 0));
-    m_shooterSubsystem.setHoodPos(shooterPos + SmartDashboard.getNumber("hood offset", 0));
-    m_shooterSubsystem.setShooterVel(shooterVel + SmartDashboard.getNumber("speed offset", 0));
+    double hoodTarget = shooterPos + SmartDashboard.getNumber("hood offset", 0);
+    double speedTarget = shooterVel + SmartDashboard.getNumber("speed offset", 0);
+    m_shooterSubsystem.setHoodPos(hoodTarget);
+    m_shooterSubsystem.setShooterVel(speedTarget);
+
+    boolean ready = speedTarget > 0
+        && Math.abs(rotationPID.getPositionError()) <= 0.067
+        && withinRange(m_shooterSubsystem.getShooterVel(), speedTarget, 5)
+        && withinRange(m_shooterSubsystem.getHoodPos(), hoodTarget, 0.2);
+    LEDs.setReadyToShoot(ready);
+    Logger.recordOutput("Shooting/Ready", ready);
 
     Logger.recordOutput("target shooter pos", shooterPos);
     Logger.recordOutput("target shooter vel", shooterVel);
 
     // m_shooterSubsystem.setTurretPos(0);
 
-    // if(!(controller == null)){
-    //   if(withinRange(m_shooterSubsystem.getShooterVel(), shooterVel, 5) && withinRange(localTargetPos.getTranslation().getAngle().getRadians(), rotationPID.getSetpoint(), 0.067)){
-    //     controller.setRumble(RumbleType.kBothRumble, 1);
-    //     LEDs.setPattern(LEDConstants.green);
-    //   } else {
-    //     controller.setRumble(RumbleType.kBothRumble, 0);
-    //     LEDs.setPattern(LEDConstants.red);
-    //   }
-    // }
+
 
   }
 
@@ -170,7 +173,8 @@ public class AutoAim extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // LEDs.setEnabledPattern(LEDConstants.enabledPattern);
+    LEDs.setReadyToShoot(false);
+    Logger.recordOutput("Shooting/Ready", false);
   }
 
   // Returns true when the command should end.

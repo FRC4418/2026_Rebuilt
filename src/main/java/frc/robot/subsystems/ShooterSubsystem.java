@@ -90,6 +90,10 @@ public class ShooterSubsystem extends SubsystemBase {
     m_hoodMotor.set(percent);
   }
 
+  public double getHoodPos(){
+    return m_hoodMotor.getEncoder().getPosition();
+  }
+
   public void setHoodPos(double numRotations){
     m_hoodController.setSetpoint(numRotations, SparkBase.ControlType.kPosition);
     

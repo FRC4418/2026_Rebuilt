@@ -65,7 +65,7 @@ public class ManipulatorConstants {
     }
 
     public static class LEDConstants{
-        public static final LEDPattern red = LEDPattern.solid(new Color(0, 255, 0));
+        public static final LEDPattern red = LEDPattern.solid(new Color(255, 0, 0));
         public static final LEDPattern green = LEDPattern.solid(new Color(0, 255,0));
         public static final LEDPattern blue = LEDPattern.solid(new Color(0, 0, 255));
 

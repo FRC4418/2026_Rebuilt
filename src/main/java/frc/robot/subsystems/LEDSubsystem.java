@@ -22,6 +22,12 @@ import frc.robot.constants.ManipulatorConstants.LEDConstants;
 
 public class LEDSubsystem extends SubsystemBase {
 
+  private boolean readyToShoot = false;
+
+  public void setReadyToShoot(boolean ready){
+    readyToShoot = ready;
+  }
+
   private AddressableLED m_led = new AddressableLED(0);
 
   private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(30);
@@ -78,14 +84,8 @@ public class LEDSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if(DriverStation.isTeleopEnabled()){
-      setPattern(red);
-    }else if(DriverStation.isAutonomousEnabled()){
-      setPattern(LEDConstants.blue.breathe(Seconds.of(.5)));
-    }else{
-      // updateLEDDisabled();
-      setPattern(red);
-    }
+    setPattern(DriverStation.isEnabled() && readyToShoot
+        ? LEDConstants.green : LEDConstants.red);
   }
 
 
