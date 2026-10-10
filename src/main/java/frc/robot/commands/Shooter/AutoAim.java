@@ -74,7 +74,6 @@ public class AutoAim extends Command {
     LEDs.setReadyToShoot(false);
     targetPose = targetPoseSupplier.get();
     rotationPID.reset();
-    rotationPID.setSetpoint(SmartDashboard.getNumber("shooting angle offset", 0));
 
     // targetPose = (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) ? new Pose2d(ShooterConstants.redHub, Rotation2d.k180deg) : new Pose2d(ShooterConstants.blueHub, Rotation2d.kZero);
 
@@ -112,7 +111,14 @@ public class AutoAim extends Command {
 
   
 
-    // m_swerveSubsystem.driveFieldOriented(input.withControllerRotationAxis(() -> -rotationPID.calculate(localTargetPos.getTranslation().getAngle().getRadians())));
+    double bearing = targetPose.getTranslation()
+        .minus(globalTurretPose.getTranslation()).getAngle().getRadians();
+    double desiredHeading = MathUtil.angleModulus(
+        bearing - SmartDashboard.getNumber("shooting angle offset", 0));
+    double rotation = rotationPID.calculate(
+        globalTurretPose.getRotation().getRadians(), desiredHeading);
+    Logger.recordOutput("Shooting/Desired Heading", desiredHeading);
+    Logger.recordOutput("Shooting/Heading Error", rotationPID.getPositionError());
     
     // Match normal driving's alliance-relative translation and joystick deadband.
     double allianceSign = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? -1 : 1;
@@ -120,8 +126,8 @@ public class AutoAim extends Command {
         MathUtil.applyDeadband(x.getAsDouble(), 0.1),
         MathUtil.applyDeadband(y.getAsDouble(), 0.1))
         .times(allianceSign * DriveConstants.AutoAimSpeedScale);
-    // A positive target bearing needs CCW rotation; PID returns setpoint - bearing.
-    m_swerveSubsystem.drive(translation, -rotationPID.calculate(localTargetPos.getTranslation().getAngle().getRadians()), true);
+    // Positive field-heading error commands CCW rotation.
+    m_swerveSubsystem.drive(translation, rotation, true);
 
 
     double dist = localTargetPos.getTranslation().getNorm();
