@@ -52,7 +52,6 @@ public class TrajectoryCalculator{
         {4, 6.8, 55},
         {4.5, 7, 61},
         {5, 7.1, 65},
-        {5, 7.1, 65},
         {6, 7.2, 77},
         {7.7, 7.2, 100},
     };
@@ -74,7 +73,7 @@ public class TrajectoryCalculator{
     public static double getAngle(double dist){
         int i;
         for(i = 0; i < optimalPoses.length-2; i++){
-            if(optimalPoses[i][0] > dist) break;//have dist be inbetween i and i+1
+            if(optimalPoses[i+1][0] >= dist) break;// bracket the distance between i and i+1
         }//then to linear aproximation between i and i + 1
         return interpolate(dist, optimalPoses[i][0],optimalPoses[i+1][0],optimalPoses[i][1],optimalPoses[i+1][1]);
     }
@@ -82,7 +81,7 @@ public class TrajectoryCalculator{
     public static double getVelocity(double dist){
         int i;
         for(i = 0; i < optimalPoses.length-2; i++){
-            if(optimalPoses[i][0] > dist) break;
+            if(optimalPoses[i+1][0] >= dist) break;
         }
         return interpolate(dist, optimalPoses[i][0],optimalPoses[i+1][0],optimalPoses[i][2],optimalPoses[i+1][2]);
     }

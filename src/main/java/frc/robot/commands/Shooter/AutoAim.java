@@ -43,7 +43,7 @@ public class AutoAim extends Command {
   private CommandXboxController controller;
   private LEDSubsystem LEDs;
 
-  private PIDController rotationPID = new PIDController(4, 0, 0);
+  private PIDController rotationPID = new PIDController(1, 0, 0);
 
   /** Creates a new AutoAim. */
   public AutoAim(SwerveSubsystem swerveSubsystem, DoubleSupplier x, DoubleSupplier y, ShooterSubsystem shooterSubsystem, Supplier<Pose2d> targetPose, CommandXboxController controller, LEDSubsystem LEDs) {
@@ -115,8 +115,29 @@ public class AutoAim extends Command {
         .minus(globalTurretPose.getTranslation()).getAngle().getRadians();
     double desiredHeading = MathUtil.angleModulus(
         bearing - SmartDashboard.getNumber("shooting angle offset", 0));
+    // Trial: shooter faces opposite the forward direction reported by odometry.
+    double shooterHeading = MathUtil.angleModulus(
+        globalTurretPose.getRotation().getRadians() + Math.PI);
+    Logger.recordOutput("Shooting/Shooter Heading", shooterHeading);
+    double headingError = MathUtil.angleModulus(
+        desiredHeading - shooterHeading);
+    // Require the driver to roughly face the hub before enabling aim assistance.
+    boolean blocked = !Double.isFinite(headingError) || Math.abs(headingError) > Math.PI / 2;
+    Logger.recordOutput("Shooting/Aim Blocked", blocked);
+    if (blocked) {
+      m_swerveSubsystem.drive(new Translation2d(), 0, true);
+      m_shooterSubsystem.setShooterVel(0);
+      LEDs.setReadyToShoot(false);
+      Logger.recordOutput("Shooting/Ready", false);
+      Logger.recordOutput("Shooting/Heading Error", headingError);
+      Logger.recordOutput("Shooting/Desired Heading", desiredHeading);
+      Logger.recordOutput("Shooting/Target Pos", targetPose);
+      Logger.recordOutput("Shooting/Commanded Rotation", 0.0);
+      rotationPID.reset();
+      return;
+    }
     double rotation = MathUtil.clamp(rotationPID.calculate(
-        globalTurretPose.getRotation().getRadians(), desiredHeading), -1.0, 1.0);
+        shooterHeading, desiredHeading), -0.3, 0.3);
     Logger.recordOutput("Shooting/Desired Heading", desiredHeading);
     Logger.recordOutput("Shooting/Heading Error", rotationPID.getPositionError());
     Logger.recordOutput("Shooting/Commanded Rotation", rotation);
