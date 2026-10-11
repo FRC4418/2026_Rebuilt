@@ -1,114 +1,86 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
-import java.util.Random;
-
-import edu.wpi.first.units.Units;
 import static edu.wpi.first.units.Units.Hertz;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
-import edu.wpi.first.units.measure.Distance;
+
+import java.util.function.BooleanSupplier;
+import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ManipulatorConstants.LEDConstants;
 
 public class LEDSubsystem extends SubsystemBase {
+  public enum AimState { IDLE, BLOCKED, ALIGNING, SETTLING, READY }
 
-  private boolean readyToShoot = false;
+  private AimState aimState = AimState.IDLE;
+  private BooleanSupplier feeding = () -> false;
+  private final AddressableLED m_led = new AddressableLED(0);
+  private final AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(30);
+  private final LEDPattern rainbow = LEDPattern.rainbow(255, 255)
+      .scrollAtRelativeSpeed(Hertz.of(0.25)).breathe(Seconds.of(4));
+  private final LEDPattern amber = LEDPattern.solid(new Color(255, 100, 0));
+  private final LEDPattern settling = LEDConstants.blue.breathe(Seconds.of(1));
 
-  public void setReadyToShoot(boolean ready){
-    readyToShoot = ready;
-  }
-
-  private AddressableLED m_led = new AddressableLED(0);
-
-  private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(30);
-
-  private LEDPattern red = LEDPattern.solid(new Color(255,0, 0));
-  // private LEDPattern green = LEDPattern.solid(new Color(0, 255, 0));
-  private LEDPattern blue = LEDPattern.solid(new Color(0, 0, 255));
-
-  private static final Distance kLedSpacing = Meters.of(1 / 120.0);
-
-  private LEDPattern rainbow = LEDPattern.rainbow(255, 255);
-
-  private LEDPattern enabledPattern = LEDPattern.rainbow(255, 255);
-
-  
-  private LEDPattern redGrad = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, new Color(255,0,0), new Color(255,100,0)).scrollAtRelativeSpeed(Hertz.of(.5));;
-
-  private LEDPattern blueGrad = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, new Color(255,0,200), new Color(0,100,255)).scrollAtRelativeSpeed(Hertz.of(.5));;
-
-
-  private LEDPattern fancy = blueGrad.breathe(Units.Seconds.of(5));
-
-  private Random random = new Random();
-
-  private double[] ledList = new double[ledBuffer.getLength()];
-  
-
-  int rainbowFirstPixelHue = 0;
-
-
-  /** Creates a new LEDSubsystem. */
   public LEDSubsystem() {
-    for (int i = 0; i < ledList.length; i++) {
-      ledList[i] = 0;
-    }
-    rainbow = rainbow.scrollAtRelativeSpeed(Hertz.of(0.25))
-        .breathe(Seconds.of(4));
     m_led.setLength(ledBuffer.getLength());
-    // m_led2.setLength(ledBuffer.getLength());
-    // setPattern(LEDConstants.red);
-  }
-
-  public void setPattern(LEDPattern pattern){
-
-    pattern.applyTo(ledBuffer);
     m_led.setData(ledBuffer);
     m_led.start();
   }
 
-
-    public void setEnabledPattern(LEDPattern pattern){
-    enabledPattern = pattern;
+  public void setAimState(AimState state) {
+    aimState = state;
   }
 
+  public void setFeedingSupplier(BooleanSupplier supplier) {
+    feeding = supplier;
+  }
+
+  public void setPattern(LEDPattern pattern) {
+    pattern.applyTo(ledBuffer);
+    m_led.setData(ledBuffer);
+  }
 
   @Override
   public void periodic() {
+    String displayedState;
     if (DriverStation.isDisabled()) {
+      displayedState = "DISABLED";
       setPattern(rainbow);
-    } else {
-      setPattern(readyToShoot ? LEDConstants.green : LEDConstants.red);
-    }
-  }
-
-
-  private void updateLEDDisabled(){
-    rainbowFirstPixelHue ++;
-
-    for (int i = 0; i < ledBuffer.getLength(); i++) {
-      ledBuffer.setHSV(i, rainbowFirstPixelHue + (i * 180 / ledBuffer.getLength()) % 180, 255, 255);
-
-      ledList[i] -= 0.02;
-      if(random.nextDouble() < 0.005){
-        ledList[i] = 1;
+    } else if (aimState == AimState.READY && feeding.getAsBoolean()) {
+      displayedState = "FEEDING";
+      // Moving bright green segments over a dim green background.
+      int phase = (int) (Timer.getFPGATimestamp() * 20) % 10;
+      for (int i = 0; i < ledBuffer.getLength(); i++) {
+        ledBuffer.setRGB(i, 0, (i + phase) % 10 < 3 ? 255 : 30, 0);
       }
-
-      if(ledList[i] < 0) continue;
-
-      ledBuffer.setHSV(i, 0, 0, (int) (255*ledList[i]));
+      m_led.setData(ledBuffer);
+    } else {
+      displayedState = aimState.name();
+      switch (aimState) {
+        case BLOCKED:
+          setPattern(((int) (Timer.getFPGATimestamp() * 4)) % 2 == 0
+              ? LEDConstants.red : LEDPattern.solid(Color.kBlack));
+          break;
+        case ALIGNING:
+          setPattern(amber);
+          break;
+        case SETTLING:
+          setPattern(settling);
+          break;
+        case READY:
+          setPattern(LEDConstants.green);
+          break;
+        default:
+          setPattern(DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
+              == DriverStation.Alliance.Red ? LEDConstants.red : LEDConstants.blue);
+          break;
+      }
     }
-
-    m_led.setData(ledBuffer);
+    Logger.recordOutput("LEDs/State", displayedState);
   }
 }

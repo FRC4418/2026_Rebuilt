@@ -27,6 +27,12 @@ public class IndexerSubsystem extends SubsystemBase {
     m_spindexerMotor.getConfigurator().apply(MotorConstants.Indexer.spindexerConfig);
   }
 
+  private boolean feeding = false;
+
+  public boolean isFeeding(){
+    return feeding;
+  }
+
   public boolean getBeamBreak(){
     return m_beamBreak.get();
   }
@@ -38,6 +44,7 @@ public class IndexerSubsystem extends SubsystemBase {
   }
 
   public void setKickerVel(double vel){
+    feeding = vel != 0;
     m_kickerMotor.setControl(m_kickerRequest.withVelocity(vel));
   }
 
@@ -46,6 +53,7 @@ public class IndexerSubsystem extends SubsystemBase {
   }
 
   public void setKickerPercent(double percent){
+    feeding = percent != 0;
     m_kickerMotor.setControl(new DutyCycleOut(percent));
   }
 

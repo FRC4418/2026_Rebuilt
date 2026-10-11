@@ -76,12 +76,13 @@ public class AutoAim extends Command {
   public void initialize() {
     readyToShoot = false;
     readySince = Double.NaN;
-    LEDs.setReadyToShoot(false);
+    LEDs.setAimState(LEDSubsystem.AimState.BLOCKED);
     Logger.recordOutput("Shooting/Aligned", false);
     Logger.recordOutput("Shooting/Speed Ready", false);
     Logger.recordOutput("Shooting/Hood Ready", false);
     Logger.recordOutput("Shooting/Speed Error", Double.NaN);
     Logger.recordOutput("Shooting/Hood Error", Double.NaN);
+    LEDs.setAimState(LEDSubsystem.AimState.ALIGNING);
     targetPose = targetPoseSupplier.get();
     rotationPID.reset();
 
@@ -111,7 +112,7 @@ public class AutoAim extends Command {
     if(globalTurretPose == null){
       readyToShoot = false;
       readySince = Double.NaN;
-      LEDs.setReadyToShoot(false);
+      LEDs.setAimState(LEDSubsystem.AimState.BLOCKED);
       return;
     }
 
@@ -146,7 +147,7 @@ public class AutoAim extends Command {
       Logger.recordOutput("Shooting/Hood Error", Double.NaN);
       m_swerveSubsystem.drive(new Translation2d(), 0, true);
       m_shooterSubsystem.setShooterVel(0);
-      LEDs.setReadyToShoot(false);
+      LEDs.setAimState(LEDSubsystem.AimState.BLOCKED);
       Logger.recordOutput("Shooting/Ready", false);
       Logger.recordOutput("Shooting/Heading Error", headingError);
       Logger.recordOutput("Shooting/Desired Heading", desiredHeading);
@@ -213,7 +214,8 @@ public class AutoAim extends Command {
     Logger.recordOutput("Shooting/Hood Ready", hoodReady);
     Logger.recordOutput("Shooting/Speed Error", speedError);
     Logger.recordOutput("Shooting/Hood Error", hoodError);
-    LEDs.setReadyToShoot(readyToShoot);
+    LEDs.setAimState(readyToShoot ? LEDSubsystem.AimState.READY
+        : aligned ? LEDSubsystem.AimState.SETTLING : LEDSubsystem.AimState.ALIGNING);
     Logger.recordOutput("Shooting/Ready", readyToShoot);
 
     Logger.recordOutput("target shooter pos", shooterPos);
@@ -238,7 +240,7 @@ public class AutoAim extends Command {
     readySince = Double.NaN;
     m_swerveSubsystem.drive(new Translation2d(), 0, true);
     Logger.recordOutput("Shooting/Commanded Rotation", 0.0);
-    LEDs.setReadyToShoot(false);
+    LEDs.setAimState(LEDSubsystem.AimState.IDLE);
     Logger.recordOutput("Shooting/Ready", false);
   }
 
